@@ -1,11 +1,66 @@
 ---
-title: Example Guide
-description: A guide in my new Starlight docs site.
+title: Getting Started
+description: Build and run your first Mace file.
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+This guide walks through the smallest useful Mace workflow using the current
+language spec and CLI.
 
-## Further reading
+## 1) Install the CLI
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+```bash
+go install github.com/louiss0/mace/cmd@latest
+```
+
+## 2) Create a file
+
+Create `hello.mace`:
+
+```txt
+|===|
+string name = "Ada";
+|===|
+[output = data]
+{
+  greeting: "Hello $(name)";
+}
+```
+
+This follows the language structure from the spec:
+
+1. Optional imports
+2. Optional script block
+3. Exactly one output block
+
+## 3) Evaluate to JSON
+
+```bash
+mace json ./hello.mace
+```
+
+Expected output:
+
+```json
+{
+  "greeting": "Hello Ada"
+}
+```
+
+## 4) Format source
+
+```bash
+mace source ./hello.mace
+```
+
+## 5) Use the built-in LSP
+
+The Mace CLI includes an LSP server. After downloading/installing the CLI:
+
+```bash
+mace lsp
+```
+
+## 6) Use bindings if needed
+
+- Node: `@code-fixer-23/mace-node`
+- Python: `mace-python`
