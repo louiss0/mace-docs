@@ -1,19 +1,25 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { maceLanguage } from './src/expressive-code/mace-language.mjs';
 
 // https://astro.build/config
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'Mace Docs',
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/louiss0/mace' }],
+			expressiveCode: {
+				shiki: {
+					langs: [maceLanguage],
+					injectLangsIntoNestedCodeBlocks: true,
+				},
+			},
 			sidebar: [
 				{
 					label: 'Guides',
 					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
+						{ label: 'Getting Started', slug: 'guides/example' },
 					],
 				},
 				{
