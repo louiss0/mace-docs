@@ -1,6 +1,6 @@
 ---
 title: Documentation Syntax
-description: How to document Mace code using inline descriptions, doc blocks, and doc declarations.
+description: How to document Mace code using inline descriptions, doc blocks, gen_doc, and schema_doc.
 ---
 
 Mace provides three documentation forms. All three are metadata only and never
@@ -8,7 +8,8 @@ affect evaluation or output.
 
 - inline declaration descriptions written with `/#`
 - inline doc blocks attached to output blocks
-- `doc` declarations for named types and schemas
+- `gen_doc` declarations for named types
+- `schema_doc` declarations for named schemas
 
 ## Inline declaration descriptions
 
@@ -55,12 +56,18 @@ This block emits user data.
 }
 ```
 
-## Doc declarations
+## Documentation declarations
 
-A `doc` declaration attaches structured metadata to a named `type` or `schema`.
+`gen_doc` attaches structured metadata to a named `type`. `schema_doc`
+attaches structured metadata to a named `schema`.
 
 ```mace
-doc User {
+schema User: {
+  name: string;
+  age?: int;
+};
+
+schema_doc User {
   summary: "Represents a user.";
   description: """
 # User
@@ -74,20 +81,29 @@ A reusable schema that models application users.
 }
 ```
 
+```mace
+type Name: string;
+
+gen_doc Name {
+  summary: "A user display name.";
+}
+```
+
 Rules:
 
-- the target after `doc` must resolve to a named `type` or `schema`
-- each target may have at most one `doc` declaration
+- `gen_doc` must appear after the target `type` declaration
+- `schema_doc` must appear after the target `schema` declaration
+- each target may have at most one documentation declaration
 - supported entries are `summary`, `description`, and `props`
-- `props` is allowed only when the target is a schema
+- `props` is allowed only in `schema_doc`
 
 ## Conflict rules
 
 The same declaration must not be documented by more than one form.
 
-- a `type` with a `doc` declaration must not also have an inline `/#`
-- a schema field documented through `doc ... props` must not also have an
-  inline `/#` description
+- a `type` with a `gen_doc` declaration must not also have an inline `/#`
+- a schema field documented through `schema_doc ... props` must not also have
+  an inline `/#` description
 
 ## Comments
 

@@ -84,13 +84,13 @@ export const maceLanguage = {
 		declarations: {
 			patterns: [
 				{
-					match: '\\b(from|import|type|schema|doc|enum|injectable)\\b',
+					match: '\\b(from|import|type|schema|gen_doc|schema_doc|enum|injectable)\\b',
 					captures: {
 						1: { name: 'keyword.control.mace' },
 					},
 				},
 				{
-					match: '\\b(type|schema|enum|doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
+					match: '\\b(type|schema|enum|gen_doc|schema_doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
 					captures: {
 						1: { name: 'keyword.declaration.mace' },
 						2: { name: 'entity.name.type.mace' },
