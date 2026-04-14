@@ -355,6 +355,24 @@ Imports must appear before the script block and output block.
 from "./shared.mace" import Name, User;
 ```
 
+Current import rules:
+
+- import paths are resolved relative to the importing file
+- only named imports are supported
+- only symbols exposed through the imported file's output block are importable
+- top-level `type`, `enum`, `schema`, and variable declarations stay internal
+  unless they are surfaced through the output block
+- there is no explicit `export` keyword
+- circular imports are rejected
+
+Imported symbols depend on the imported file's output mode:
+
+- `output = schema` exposes named type-like fields for import
+- a schema-mode field whose type is a record, or references a schema, imports
+  as a schema
+- other schema-mode fields import as types or enums
+- `output = data` exposes named values for import
+
 ## Validation
 
 The processor validates things like:
