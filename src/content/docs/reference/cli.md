@@ -21,11 +21,13 @@ The root command is `mace`.
 
 ## Commands
 
-- `mace json <path>` evaluates a Mace file and prints JSON output
+- `mace json <path>` evaluates a Mace file and prints computed JSON output
 - `mace import <path> [path...]` converts JSON, YAML, and TOML to `.mace`
 - `mace nodes <path>` prints parsed node structure
-- `mace source <path>` prints canonical formatted Mace source
+- `mace output <path>` prints canonical formatted Mace source
 - `mace lsp` starts the Language Server Protocol server over stdio
+
+`json` is the computed-value command. `output` is the canonical-source command.
 
 ## LSP support
 
@@ -51,4 +53,4 @@ Both bindings currently wrap the official `mace` CLI.
 ## Related docs
 
 - [How to Run the Mace LSP](/how-to/run-the-mace-lsp/)
-- [How to Format Mace Source](/how-to/format-mace-source/)
+- [How to Print Canonical Mace Output](/how-to/print-canonical-mace-output/)

@@ -55,6 +55,6 @@ Expected output:
 ## What to read next
 
 - [How to validate output with a schema](/how-to/validate-output-with-a-schema/)
-- [How to format Mace source](/how-to/format-mace-source/)
+- [How to print canonical Mace output](/how-to/print-canonical-mace-output/)
 - [Language Reference](/reference/language/)
 - [Why Mace is deterministic](/explanation/why-mace-is-deterministic/)
