@@ -17,14 +17,20 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Guides',
-					items: [
-						{ label: 'Getting Started', slug: 'guides/example' },
-					],
+					label: 'Tutorials',
+					autogenerate: { directory: 'tutorials' },
+				},
+				{
+					label: 'How-to Guides',
+					autogenerate: { directory: 'how-to' },
 				},
 				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },
+				},
+				{
+					label: 'Explanation',
+					autogenerate: { directory: 'explanation' },
 				},
 			],
 		}),

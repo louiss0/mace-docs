@@ -1,35 +1,45 @@
 ---
 title: Mace Documentation
-description: Specification-driven docs for the Mace language, CLI, and tooling.
+description: Tutorials, how-to guides, reference, and explanation for the Mace language.
 ---
 
 Mace is a typed configuration language for deterministic object data.
-These docs are written from the language contract in `mace-spec.md` and the
-current CLI behavior.
 
-## What Mace includes
+These docs follow a Diátaxis structure so you can choose the kind of help you
+need.
 
-- A typed language with imports, script declarations, and one output block.
-- A `mace` CLI for JSON output, importing source formats, AST inspection,
-  source normalization, and language server runtime.
-- A downloadable Language Server Protocol (LSP) experience through the Mace CLI.
-- Official Node and Python bindings in `bindings/node` and `bindings/python`.
+## Tutorials
 
-## Quick links
+Use tutorials when you want to learn by doing.
 
-- [Getting Started](/guides/example/)
-- [Language Reference](/reference/example/)
-- [CLI and Tooling](/reference/cli-and-tooling/)
+- [First Mace File](/tutorials/first-mace-file/)
 
-## LSP, CLI, and bindings at a glance
+## How-to guides
 
-The Mace LSP is part of the CLI. Download/install the CLI, then run:
+Use how-to guides when you want to complete a specific task.
 
-```bash
-mace lsp
-```
+- [How to Validate Output with a Schema](/how-to/validate-output-with-a-schema/)
+- [How to Format Mace Source](/how-to/format-mace-source/)
+- [How to Run the Mace LSP](/how-to/run-the-mace-lsp/)
 
-If you prefer language bindings, use:
+## Bindings
 
-- Node bindings: `@code-fixer-23/mace-node`
-- Python bindings: `mace-python`
+Use the official bindings when you want to call Mace from application code.
+
+- [Node package on npmx.dev](https://npmx.dev/package/@code-fixer-23/mace-node)
+- [Python package on PyPI](https://pypi.org/project/mace-python/)
+
+## Reference
+
+Use reference pages when you need exact syntax or command behavior.
+
+- [Language Reference](/reference/language/)
+- [Documentation Syntax](/reference/documentation-syntax/)
+- [CLI Reference](/reference/cli/)
+
+## Explanation
+
+Use explanation pages when you want the design model behind the language.
+
+- [Why Mace Is Deterministic](/explanation/why-mace-is-deterministic/)
+- [Script Blocks and Output Blocks](/explanation/script-blocks-and-output-blocks/)
