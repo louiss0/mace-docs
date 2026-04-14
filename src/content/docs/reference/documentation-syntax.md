@@ -3,13 +3,13 @@ title: Documentation Syntax
 description: How to document Mace code using inline descriptions, doc blocks, gen_doc, and schema_doc.
 ---
 
-Mace provides three documentation forms. All three are metadata only and never
+Mace provides four documentation forms. All four are metadata only and never
 affect evaluation or output.
 
 - inline declaration descriptions written with `/#`
 - inline doc blocks attached to output blocks
-- `gen_doc` declarations for named types
-- `schema_doc` declarations for named schemas
+- `gen_doc` declarations for named types and variables
+- `schema_doc` declarations for named schemas and enums
 
 ## Inline declaration descriptions
 
@@ -22,6 +22,10 @@ Allowed on:
 - schema fields
 - output fields
 - output schema fields
+
+Not allowed on:
+
+- variable declarations
 
 ```mace
 |===|
@@ -58,8 +62,8 @@ This block emits user data.
 
 ## Documentation declarations
 
-`gen_doc` attaches structured metadata to a named `type`. `schema_doc`
-attaches structured metadata to a named `schema`.
+`gen_doc` attaches structured metadata to a named `type` or variable.
+`schema_doc` attaches structured metadata to a named `schema` or `enum`.
 
 ```mace
 schema User: {
@@ -83,19 +87,35 @@ A reusable schema that models application users.
 
 ```mace
 type Name: string;
+string greeting = "Hello";
 
 gen_doc Name {
   summary: "A user display name.";
+}
+
+gen_doc greeting {
+  summary: "Rendered greeting.";
+}
+```
+
+```mace
+enum Status: string {
+  Pending,
+  Running,
+};
+
+schema_doc Status {
+  summary: "Runtime status.";
 }
 ```
 
 Rules:
 
-- `gen_doc` must appear after the target `type` declaration
-- `schema_doc` must appear after the target `schema` declaration
+- `gen_doc` must appear after the target `type` or variable declaration
+- `schema_doc` must appear after the target `schema` or `enum` declaration
 - each target may have at most one documentation declaration
 - supported entries are `summary`, `description`, and `props`
-- `props` is allowed only in `schema_doc`
+- `props` is allowed only in `schema_doc`, and only when the target is a schema
 
 ## Conflict rules
 
@@ -108,7 +128,7 @@ The same declaration must not be documented by more than one form.
 ## Comments
 
 Mace comments use the `/=` prefix and are not documentation metadata.
-Comments are discarded during parsing, while doc forms are preserved.
+Comments are discarded during parsing, while documentation forms are preserved.
 
 ## Related docs
 
