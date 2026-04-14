@@ -5,6 +5,7 @@ import { maceLanguage } from './src/expressive-code/mace-language.mjs';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://mace-docs.onrender.com',
 	integrations: [
 		starlight({
 			title: 'Mace Docs',
