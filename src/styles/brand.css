@@ -1,0 +1,85 @@
+:root {
+	--sl-color-accent-low: #204800;
+	--sl-color-accent: #86ff2b;
+	--sl-color-accent-high: #e5ffbf;
+	--sl-color-white: #f7ffe9;
+	--sl-color-gray-1: #f7ffe9;
+	--sl-color-gray-2: #e5ffbf;
+	--sl-color-gray-3: #c9ff93;
+	--sl-color-gray-4: #86ff2b;
+	--sl-color-gray-5: #4f8d10;
+	--sl-color-gray-6: #335d09;
+	--sl-color-black: #081400;
+	--sl-color-bg: #081400;
+	--sl-color-bg-nav: rgba(8, 20, 0, 0.94);
+	--sl-color-bg-sidebar: #102100;
+	--sl-color-bg-inline-code: rgba(134, 255, 43, 0.16);
+	--sl-color-hairline-light: rgba(201, 255, 147, 0.14);
+	--sl-color-hairline-shade: rgba(201, 255, 147, 0.24);
+	--sl-color-text: #f7ffe9;
+	--sl-color-text-accent: #e5ffbf;
+	--sl-color-text-invert: #112200;
+	--sl-color-text-code: #f7ffe9;
+	--sl-color-backdrop: rgba(8, 20, 0, 0.6);
+	--code-block-bg: #163000;
+	--code-block-border: #335d09;
+}
+
+:root[data-theme='light'] {
+	color-scheme: light;
+	--sl-color-accent-low: #efffd5;
+	--sl-color-accent: #86ff2b;
+	--sl-color-accent-high: #335d09;
+	--sl-color-white: #112200;
+	--sl-color-gray-1: #112200;
+	--sl-color-gray-2: #1b3402;
+	--sl-color-gray-3: #335d09;
+	--sl-color-gray-4: #4f8d10;
+	--sl-color-gray-5: #86ff2b;
+	--sl-color-gray-6: #c9ff93;
+	--sl-color-black: #f7ffe9;
+	--sl-color-bg: #f7ffe9;
+	--sl-color-bg-nav: rgba(247, 255, 233, 0.94);
+	--sl-color-bg-sidebar: #f3ffd9;
+	--sl-color-bg-inline-code: rgba(134, 255, 43, 0.12);
+	--sl-color-hairline-light: rgba(27, 52, 2, 0.12);
+	--sl-color-hairline-shade: rgba(27, 52, 2, 0.2);
+	--sl-color-text: #112200;
+	--sl-color-text-accent: #1b3402;
+	--sl-color-text-invert: #f7ffe9;
+	--sl-color-text-code: #1b3402;
+	--sl-color-backdrop: rgba(17, 34, 0, 0.35);
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+}
+
+.hero img,
+main img[alt='Mace logo'] {
+	border-radius: 1rem;
+}
+
+header {
+	backdrop-filter: blur(1rem);
+}
+
+.site-title,
+.content-panel,
+.sl-markdown-content,
+.right-sidebar-panel {
+	color: var(--sl-color-text);
+}
+
+.expressive-code,
+.expressive-code .frame,
+.expressive-code pre,
+pre.astro-code {
+	background: var(--code-block-bg) !important;
+	border-color: var(--code-block-border) !important;
+}
+
+.expressive-code .frame,
+pre.astro-code {
+	box-shadow: inset 0 0 0 1px rgba(134, 255, 43, 0.08);
+}
