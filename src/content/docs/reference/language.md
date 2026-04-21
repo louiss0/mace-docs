@@ -87,6 +87,45 @@ Supported operators:
 - logical: `&&`, `||`
 - ternary conditional: `condition ? when_true : when_false`
 
+### Numbers and numeric operators
+
+Mace has two numeric primitives: `int` and `float`.
+
+For `+`, `-`, `*`, `/`, `%`, and `**`:
+
+- `int` with `int` produces an `int`
+- if either operand is a `float`, the result is a `float`
+
+For numeric comparisons:
+
+- `int` and `float` may be compared together
+- comparisons always produce a `boolean`
+
+Examples:
+
+```mace
+{
+  whole: 9 % 4;
+  mixed_sum: 1 + 2.5;
+  mixed_mod: 9 % 2.5;
+  power: 2 ** 3.0;
+  ordered: 3 < 3.5;
+}
+```
+
+This evaluates to values equivalent to:
+
+- `whole` => `1`
+- `mixed_sum` => `3.5`
+- `mixed_mod` => `1.5`
+- `power` => `8.0`
+- `ordered` => `true`
+
+These operators remain `int`-only:
+
+- bitwise: `&`, `|`, `^`, `~`
+- shift: `<<`, `>>`, `>>>`
+
 Member access with `.` resolves to enum members when the left-hand side is an
 enum name, and to value field access otherwise.
 
