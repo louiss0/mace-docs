@@ -282,8 +282,8 @@ Schemas define record types with required and optional fields.
 
 ```mace
 schema User: {
-  name: string;
-  age?: int;
+  name: string,
+  age?: int,
 };
 ```
 
@@ -309,9 +309,9 @@ Implicit `string` enum members use the member name itself as the runtime value.
 
 ```mace
 enum Fruit: string {
-  Apple,
-  Strawberry,
-  Pecan,
+  Apple /# A default apple label,
+  Strawberry /# A default strawberry label,
+  Pecan /# A default pecan label,
 };
 ```
 
@@ -327,14 +327,14 @@ Explicit `string` enums assign every member a string literal.
 
 ```mace
 enum Fruit: string {
-  Apple = "apple",
-  Strawberry = "strawberry",
-  Pecan = "pecan",
+  Apple = "apple" /# Lowercase wire value,
+  Strawberry = "strawberry" /# Lowercase wire value,
+  Pecan = "pecan" /# Lowercase wire value,
 };
 ```
 
 Every explicit value must be a string literal, and enum values must still be
-unique.
+unique. Enum members may also carry inline `/#` descriptions.
 
 #### Implicit `int` enums
 
@@ -342,9 +342,9 @@ Implicit `int` enum members use their zero-based declaration index.
 
 ```mace
 enum Status: int {
-  Pending,
-  Running,
-  Done,
+  Pending /# Queue item is waiting,
+  Running /# Queue item is active,
+  Done /# Queue item is complete,
 };
 ```
 
@@ -368,6 +368,12 @@ enum Status: int {
 
 Every explicit value must be an integer literal, and enum values must still be
 unique.
+
+#### Enum member documentation
+
+Enum members support the same inline `/#` descriptions that schema fields use.
+Use them for short member-level documentation, and use `schema_doc` when you
+need structured docs for the enum declaration itself.
 
 #### Using enum values
 
@@ -393,6 +399,16 @@ Imports must appear before the script block and output block.
 ```mace
 from "./shared.mace" import Name, User;
 ```
+
+Pair-style entries inside delimited structures use commas in canonical Mace:
+
+- enum members
+- schema fields
+- output fields
+- record literal fields
+- documentation entries inside `gen_doc` and `schema_doc`
+
+Top-level declarations still end with `;`.
 
 Current import rules:
 

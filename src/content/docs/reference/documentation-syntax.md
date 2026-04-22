@@ -19,6 +19,7 @@ declaration or field.
 Allowed on:
 
 - `type` declarations
+- enum members
 - schema fields
 - output fields
 - output schema fields
@@ -31,15 +32,20 @@ Not allowed on:
 |===|
 type Name: string /# A user display name;
 
+enum Status: string {
+  Pending /# Work has not started,
+  Running /# Work is in progress,
+};
+
 schema User: {
-  name: string /# The user's display name;
-  age?: int /# Optional age in years;
+  name: string /# The user's display name,
+  age?: int /# Optional age in years,
 };
 |===|
 
 [output = data]
 {
-  name: "Ada" /# The emitted user name;
+  name: "Ada" /# The emitted user name,
 }
 ```
 
@@ -67,22 +73,22 @@ This block emits user data.
 
 ```mace
 schema User: {
-  name: string;
-  age?: int;
+  name: string,
+  age?: int,
 };
 
 schema_doc User {
-  summary: "Represents a user.";
+  summary: "Represents a user.",
   description: """
 # User
 
 A reusable schema that models application users.
-""";
+""",
   props: {
-    name: "The user's display name";
-    age: "Optional age in years";
-  };
-}
+    name: "The user's display name",
+    age: "Optional age in years",
+  },
+};
 ```
 
 ```mace
@@ -90,23 +96,23 @@ type Name: string;
 string greeting = "Hello";
 
 gen_doc Name {
-  summary: "A user display name.";
-}
+  summary: "A user display name.",
+};
 
 gen_doc greeting {
-  summary: "Rendered greeting.";
-}
+  summary: "Rendered greeting.",
+};
 ```
 
 ```mace
 enum Status: string {
-  Pending,
-  Running,
+  Pending /# Work has not started,
+  Running /# Work is in progress,
 };
 
 schema_doc Status {
-  summary: "Runtime status.";
-}
+  summary: "Runtime status.",
+};
 ```
 
 Rules:
@@ -115,6 +121,7 @@ Rules:
 - `schema_doc` must appear after the target `schema` or `enum` declaration
 - each target may have at most one documentation declaration
 - supported entries are `summary`, `description`, and `props`
+- documentation entries use pair separators, so they end with `,` inside the declaration body
 - `props` is allowed only in `schema_doc`, and only when the target is a schema
 
 ## Conflict rules
