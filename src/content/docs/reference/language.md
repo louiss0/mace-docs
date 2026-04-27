@@ -428,6 +428,45 @@ Imported symbols depend on the imported file's output mode:
 - other schema-mode fields import as types or enums
 - `output = data` exposes named values for import
 
+## Array access
+
+Array values can be indexed with zero-based integer access using `[<number>]`.
+
+```mace
+[output = data]
+{
+  names: ["Ada", "Linus", "Grace"],
+  first_name: $self.names[0],
+  users: [
+    { name: "Ada" },
+    { name: "Linus" }
+  ],
+  first_user_name: $self.users[0].name
+}
+```
+
+Array access also works recursively on nested arrays, including variables:
+
+```mace
+|===|
+array<array<array<int>>> matrix = [[[1]]];
+|===|
+[output = data]
+{
+  value: matrix[0][0][0]
+}
+```
+
+Rules:
+
+- array access uses zero-based indexing
+- the index must be an integer literal
+- array access may be chained recursively for nested arrays
+- array access requires an array value at each nesting level
+- out-of-range indexes are invalid
+- member access may follow array access when the indexed element is a record
+- invalid access diagnostics report the nesting level that failed
+
 ## Validation
 
 The processor validates things like:
