@@ -19,6 +19,10 @@ export default defineConfig({
 			expressiveCode: {
 				shiki: {
 					langs: [maceLanguage],
+					themes: {
+						dark: 'material-theme-darker',
+						light: 'material-theme-lighter',
+					},
 					injectLangsIntoNestedCodeBlocks: true,
 				},
 			},

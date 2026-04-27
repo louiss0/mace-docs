@@ -21,8 +21,8 @@
 	--sl-color-text-invert: #112200;
 	--sl-color-text-code: #f7ffe9;
 	--sl-color-backdrop: rgba(8, 20, 0, 0.6);
-	--code-block-bg: #163000;
-	--code-block-border: #335d09;
+	--code-block-bg: #212121;
+	--code-block-border: #424242;
 }
 
 :root[data-theme='light'] {
@@ -49,6 +49,8 @@
 	--sl-color-text-invert: #f7ffe9;
 	--sl-color-text-code: #1b3402;
 	--sl-color-backdrop: rgba(17, 34, 0, 0.35);
+	--code-block-bg: #fafafa;
+	--code-block-border: #d0d0d0;
 }
 
 :root[data-theme='dark'] {
@@ -81,5 +83,10 @@ pre.astro-code {
 
 .expressive-code .frame,
 pre.astro-code {
-	box-shadow: inset 0 0 0 1px rgba(134, 255, 43, 0.08);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
+
+:root[data-theme='light'] .expressive-code .frame,
+:root[data-theme='light'] pre.astro-code {
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}}
