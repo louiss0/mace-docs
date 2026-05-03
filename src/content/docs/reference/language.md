@@ -8,12 +8,11 @@ data. Every Mace file evaluates to a single output object.
 
 A file can contain:
 
-- zero or more import declarations
-- an optional script block for types, schemas, enums, and variables
+- an optional script block for imports, types, schemas, enums, and variables
 - exactly one output block
 
 The output block is where data is emitted. The script block is where you define
-the types and values that feed into it.
+the imports, types, and values that feed into it.
 
 ```mace
 |===|
@@ -394,10 +393,13 @@ imports.
 
 ### Imports
 
-Imports must appear before the script block and output block.
+Imports use the existing `from "..." import ...;` syntax, but when present they
+belong at the top of the script block.
 
 ```mace
+|===|
 from "./shared.mace" import Name, User;
+|===|
 ```
 
 Pair-style entries inside delimited structures use commas in canonical Mace:
