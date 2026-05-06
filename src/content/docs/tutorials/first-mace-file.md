@@ -28,9 +28,10 @@ string name = "Ada";
 
 This file uses Mace's basic structure:
 
-- optional imports
 - an optional script block
 - exactly one output block
+
+Imports are optional and, when used, go at the top of the script block.
 
 ## Evaluate the file
 
