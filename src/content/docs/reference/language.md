@@ -21,8 +21,8 @@ int age = 27;
 |===|
 
 {
-  name: name;
-  age: age;
+  name: name,
+  age: age
 }
 ```
 
@@ -33,15 +33,16 @@ of named fields, each holding a data value.
 
 ```mace
 {
-  name: "Ada";
-  enabled: true;
-  score: 42;
+  name: "Ada",
+  enabled: true,
+  score: 42
 }
 ```
 
 ### Fields
 
-Each field is a `name: value;` pair terminated by `;`. Field names must be
+Each field is a `name: value` pair. Non-final fields are separated with `,`,
+and a trailing comma on the final field is optional. Field names must be
 unique within the block.
 
 Fields hold data values such as strings, integers, floats, booleans, arrays,
@@ -49,14 +50,14 @@ and records:
 
 ```mace
 {
-  greeting: "hello";
-  count: 3;
-  ratio: 1.5;
-  active: true;
-  tags: ["config", "demo"];
+  greeting: "hello",
+  count: 3,
+  ratio: 1.5,
+  active: true,
+  tags: ["config", "demo"],
   nested: {
-    key: "value";
-  };
+    key: "value"
+  }
 }
 ```
 
@@ -81,7 +82,7 @@ Supported operators:
 - arithmetic: `+`, `-`, `*`, `/`, `%`, `**`
 - shift: `<<`, `>>`, `>>>`
 - comparison: `<`, `<=`, `>`, `>=`
-- equality: `==`, `!=`
+- equality: `==`, `!=`, `===`, `!==`
 - bitwise: `&`, `|`, `^`
 - logical: `&&`, `||`
 - ternary conditional: `condition ? when_true : when_false`
@@ -104,11 +105,11 @@ Examples:
 
 ```mace
 {
-  whole: 9 % 4;
-  mixed_sum: 1 + 2.5;
-  mixed_mod: 9 % 2.5;
-  power: 2 ** 3.0;
-  ordered: 3 < 3.5;
+  whole: 9 % 4,
+  mixed_sum: 1 + 2.5,
+  mixed_mod: 9 % 2.5,
+  power: 2 ** 3.0,
+  ordered: 3 < 3.5
 }
 ```
 
@@ -134,9 +135,9 @@ string suffix = "one";
 |===|
 
 {
-  sum: 2 + 2;
-  label: "item-$(suffix)";
-  flag: 10 > 5 ? true : false;
+  sum: 2 + 2,
+  label: "item-$(suffix)",
+  flag: 10 > 5 ? true : false
 }
 ```
 
@@ -148,8 +149,8 @@ been evaluated.
 
 ```mace
 {
-  base: 4;
-  doubled: $self.base * 2;
+  base: 4,
+  doubled: $self.base * 2
 }
 ```
 
@@ -256,8 +257,9 @@ The script block is delimited by matching pipe delimiters with at least three
 
 ### Variables
 
-Variables are immutable and must have both an explicit type and an initializer.
-The `injectable` keyword marks a variable whose value is supplied at runtime.
+Variables are immutable and must have an explicit type. Regular variables
+must have an initializer. The `injectable` keyword marks a variable whose value
+is supplied at runtime, so its initializer may be omitted.
 
 ```mace
 int age = 27;
@@ -402,13 +404,14 @@ from "./shared.mace" import Name, User;
 |===|
 ```
 
-Pair-style entries inside delimited structures use commas in canonical Mace:
+Pair-style entries inside delimited structures use commas:
 
 - enum members
 - schema fields
 - output fields
 - record literal fields
 - documentation entries inside `gen_doc` and `schema_doc`
+- `props` entries inside `schema_doc`
 
 Top-level declarations still end with `;`.
 

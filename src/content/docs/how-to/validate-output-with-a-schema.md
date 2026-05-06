@@ -11,8 +11,8 @@ checked against a schema declared in the same file.
 ```mace
 |===|
 schema User: {
-  name: string;
-  age?: int;
+  name: string,
+  age?: int
 };
 |===|
 ```
@@ -22,15 +22,15 @@ schema User: {
 ```mace
 |===|
 schema User: {
-  name: string;
-  age?: int;
+  name: string,
+  age?: int
 };
 |===|
 
 [output = data, schema = User]
 {
-  name: "Ada";
-  age: 27;
+  name: "Ada",
+  age: 27
 }
 ```
 
@@ -39,7 +39,7 @@ schema User: {
 ```mace
 [output = data, schema_file = "./schemas.mace"]
 {
-  name: "Ada";
+  name: "Ada"
 }
 ```
 

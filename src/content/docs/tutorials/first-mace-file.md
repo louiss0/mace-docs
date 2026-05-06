@@ -22,7 +22,7 @@ string name = "Ada";
 |===|
 [output = data]
 {
-  greeting: "Hello $(name)";
+  greeting: "Hello $(name)"
 }
 ```
 

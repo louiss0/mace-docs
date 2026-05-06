@@ -13,8 +13,8 @@ affect evaluation or output.
 
 ## Inline declaration descriptions
 
-Use `/#` before the terminating `;` to attach a short description to a
-declaration or field.
+Use `/#` before a declaration terminator or field separator to attach a short
+description to a declaration or field.
 
 Allowed on:
 
@@ -39,7 +39,7 @@ enum Status: string {
 
 schema User: {
   name: string /# The user's display name,
-  age?: int /# Optional age in years,
+  age?: int /# Optional age in years
 };
 |===|
 
@@ -62,7 +62,7 @@ directive list and the opening `{` of an output block.
 This block emits user data.
 """
 {
-  name: "Ada";
+  name: "Ada"
 }
 ```
 
@@ -121,7 +121,8 @@ Rules:
 - `schema_doc` must appear after the target `schema` or `enum` declaration
 - each target may have at most one documentation declaration
 - supported entries are `summary`, `description`, and `props`
-- documentation entries use pair separators, so they end with `,` inside the declaration body
+- documentation entries end with `,` inside the declaration body
+- `props` entries also use commas, not semicolons
 - `props` is allowed only in `schema_doc`, and only when the target is a schema
 
 ## Conflict rules
