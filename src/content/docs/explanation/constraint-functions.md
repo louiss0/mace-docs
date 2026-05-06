@@ -45,8 +45,8 @@ Examples:
 
 ```mace
 schema User: {
-  username: string match(re"^[a-z][a-z0-9_]{2,31}$", "Username must start with a letter and contain only lowercase letters, numbers, or underscores");
-  age: int min(13, "Age must be at least 13");
+  username: string match(re"^[a-z][a-z0-9_]{2,31}$", "Username must start with a letter and contain only lowercase letters, numbers, or underscores"),
+  age: int min(13, "Age must be at least 13")
 };
 
 |===|
@@ -72,7 +72,7 @@ and before the variable name.
 Good:
 
 ```mace
-username: string match(re"^[a-z]+$", "Invalid username");
+username: string match(re"^[a-z]+$", "Invalid username"),
 string match(re"^[a-z]+$", "Invalid username") username = "ada";
 ```
 
@@ -96,8 +96,8 @@ than metadata attached from the outside.
 So this direction prefers forms like:
 
 ```mace
-username: string match(...);
-age: int min(...);
+username: string match(...),
+age: int min(...)
 ```
 
 instead of decorator-like syntax.
@@ -135,7 +135,7 @@ The same syntax can mean the same rule at different stages.
 A constraint defines validation rules for values assigned to that field.
 
 ```mace
-username: string match(re"^[a-z]+$", "Username must contain only lowercase letters");
+username: string match(re"^[a-z]+$", "Username must contain only lowercase letters")
 ```
 
 ### In variables
@@ -220,7 +220,7 @@ To keep the language simple, constraints should remain declaration-only.
 Good:
 
 ```mace
-username: string match(re"^[a-z]+$", "Invalid username");
+username: string match(re"^[a-z]+$", "Invalid username"),
 string match(re"^[a-z]+$", "Invalid username") username = "ada";
 ```
 
