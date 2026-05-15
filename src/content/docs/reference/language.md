@@ -82,7 +82,7 @@ Supported operators:
 - arithmetic: `+`, `-`, `*`, `/`, `%`, `**`
 - shift: `<<`, `>>`, `>>>`
 - comparison: `<`, `<=`, `>`, `>=`
-- equality: `==`, `!=`, `===`, `!==`
+- equality: `==`, `!=`
 - bitwise: `&`, `|`, `^`
 - logical: `&&`, `||`
 - ternary conditional: `condition ? when_true : when_false`
@@ -225,11 +225,20 @@ array<array<int>>
 
 ### Unions
 
-Unions use `union[T1, T2, ...]` syntax and represent schema composition.
+Unions use `union[T1, T2, ...]` syntax and represent schema or enum composition.
 
 ```mace
 type User: union[Profile, Audit];
+type Permission: union[Access, Feature];
 ```
+
+Schema unions combine member fields into one closed record shape. Enum unions
+create merged same-backing enums. Named enum union aliases merge under the alias
+name, while inline enum unions rewrite source enum values through an anonymous
+merged enum in expected-type contexts. If enum member names conflict, the later
+member replaces the earlier member with the latest value from the created enum.
+Duplicate `int` enum values are reassigned to the next available integer, while
+duplicate `string` enum values on different keys are invalid.
 
 ### Variants
 
@@ -238,6 +247,9 @@ Variants use `variant[T1, T2, ...]` syntax and represent closed alternatives.
 ```mace
 type Scalar: variant[string, int];
 ```
+
+Enum variants remain source alternatives, but same-backing enum values are
+shifted through an anonymous enum so conflicting `int` values do not collide.
 
 ## The script block
 

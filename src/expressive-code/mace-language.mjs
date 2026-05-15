@@ -160,7 +160,7 @@ export const maceLanguage = {
 			patterns: [
 				{
 					name: 'keyword.operator.mace',
-					match: '===|!==|==|!=|<=|>=|>>>|>>|<<|&&|\\|\\||\\*\\*|[=:+\\-*/%!?~&^|<>.]',
+					match: '==|!=|<=|>=|>>>|>>|<<|&&|\\|\\||\\*\\*|[=:+\\-*/%!?~&^|<>.]',
 				},
 				{
 					name: 'punctuation.separator.mace',
