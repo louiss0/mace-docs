@@ -68,8 +68,8 @@ This block emits user data.
 
 ## Documentation declarations
 
-`gen_doc` attaches structured metadata to a named `type` or variable.
-`schema_doc` attaches structured metadata to a named `schema` or `enum`.
+`gen_doc` attaches structured metadata to a named `type` or non-object variable.
+`schema_doc` attaches structured metadata to a named `schema`, `enum`, or object-valued variable.
 
 ```mace
 schema User: {
@@ -113,17 +113,30 @@ enum Status: string {
 schema_doc Status {
   summary: "Runtime status.",
 };
+
+User profile = {
+  name: greeting,
+};
+
+schema_doc profile {
+  summary: "Profile object.",
+  props: {
+    name: "Profile display name",
+  },
+};
 ```
 
 Rules:
 
-- `gen_doc` must appear after the target `type` or variable declaration
-- `schema_doc` must appear after the target `schema` or `enum` declaration
+- `gen_doc` must appear after the target `type` or non-object variable declaration
+- `schema_doc` must appear after the target `schema`, `enum`, or object-valued variable declaration
 - each target may have at most one documentation declaration
-- supported entries are `summary`, `description`, and `props`
+- `gen_doc` supports `summary` and `description`
+- `schema_doc` supports `summary`, `description`, and `props`
 - documentation entries end with `,` inside the declaration body
 - `props` entries also use commas, not semicolons
-- `props` is allowed only in `schema_doc`, and only when the target is a schema
+- `props` is allowed only in `schema_doc`
+- `props` keys must match fields on the target schema or object-valued variable
 
 ## Conflict rules
 
