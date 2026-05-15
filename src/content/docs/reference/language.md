@@ -83,9 +83,15 @@ Supported operators:
 - shift: `<<`, `>>`, `>>>`
 - comparison: `<`, `<=`, `>`, `>=`
 - equality: `==`, `!=`
+- structural merge: `left <> right`
 - bitwise: `&`, `|`, `^`
 - logical: `&&`, `||`
 - ternary conditional: `condition ? when_true : when_false`
+
+### Structural merge
+
+Structural merge operands must be identifiers, object literals, or array
+literals. Records merge deeply and arrays concatenate from left to right.
 
 ### Numbers and numeric operators
 
