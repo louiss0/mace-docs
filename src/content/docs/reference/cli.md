@@ -23,11 +23,12 @@ The root command is `mace`.
 
 - `mace json <path>` evaluates a Mace file and prints computed JSON output
 - `mace import <path> [path...]` converts JSON, YAML, and TOML to `.mace`
+- `mace check <path> [path...]` reports JSON, YAML, and TOML compatibility issues as Mace data
 - `mace nodes <path>` prints parsed node structure
 - `mace output <path>` prints canonical formatted Mace source
 - `mace lsp` starts the Language Server Protocol server over stdio
 
-`json` is the computed-value command. `output` is the canonical-source command.
+`json` is the computed-value command. `check` is the compatibility-audit command. `output` is the canonical-source command.
 
 ## LSP support
 

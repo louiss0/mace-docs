@@ -8,7 +8,7 @@ data. Every Mace file evaluates to a single output object.
 
 A file can contain:
 
-- an optional script block for imports, types, schemas, enums, and variables
+- an optional script block for imports, types, schemas, and variables
 - exactly one output block
 
 The output block is where data is emitted. The script block is where you define
@@ -70,7 +70,7 @@ All expressions in Mace are pure and deterministic.
 Supported expression forms:
 
 - identifiers
-- member access: `value.member` or `Enum.Member`
+- member access: `value.member`
 - string, int, float, and boolean literals
 - array literals
 - record literals
@@ -132,8 +132,7 @@ These operators remain `int`-only:
 - bitwise: `&`, `|`, `^`, `~`
 - shift: `<<`, `>>`, `>>>`
 
-Member access with `.` resolves to enum members when the left-hand side is an
-enum name, and to value field access otherwise.
+Member access with `.` resolves to value field access.
 
 ```mace
 |===|
@@ -231,20 +230,13 @@ array<array<int>>
 
 ### Unions
 
-Unions use `union[T1, T2, ...]` syntax and represent schema or enum composition.
+Unions use `union[T1, T2, ...]` syntax and represent schema composition.
 
 ```mace
 type User: union[Profile, Audit];
-type Permission: union[Access, Feature];
 ```
 
-Schema unions combine member fields into one closed record shape. Enum unions
-create merged same-backing enums. Named enum union aliases merge under the alias
-name, while inline enum unions rewrite source enum values through an anonymous
-merged enum in expected-type contexts. If enum member names conflict, the later
-member replaces the earlier member with the latest value from the created enum.
-Duplicate `int` enum values are reassigned to the next available integer, while
-duplicate `string` enum values on different keys are invalid.
+Schema unions combine member fields into one closed record shape.
 
 ### Variants
 
@@ -252,15 +244,16 @@ Variants use `variant[T1, T2, ...]` syntax and represent closed alternatives.
 
 ```mace
 type Scalar: variant[string, int];
+type Input: variant[choice["dev", "prod"], int];
 ```
 
-Enum variants remain source alternatives, but same-backing enum values are
-shifted through an anonymous enum so conflicting `int` values do not collide.
+Choice members remain literal alternatives inside variants, and tooling may
+surface those literal values directly in completions.
 
 ## The script block
 
-The script block is where you define types, schemas, enums, and variables that
-feed into the output block.
+The script block is where you define types, schemas, and variables that feed
+into the output block.
 
 ### Delimiters
 
@@ -306,110 +299,35 @@ schema User: {
 };
 ```
 
-### Enum declarations
+### Choice declarations
 
-Enums define named scalar types with a backing type and a fixed set of members.
-Mace supports two backing types, so there are two kinds of enums:
-
-- `string` enums
-- `int` enums
-
-Both kinds support two declaration styles:
-
-- implicit values for every member
-- explicit values for every member
-
-You must pick one style per enum. Mixing implicit and explicit members in the
-same enum is invalid.
-
-#### Implicit `string` enums
-
-Implicit `string` enum members use the member name itself as the runtime value.
+Choices are declared through normal type aliases with `choice[...]`.
+A choice defines a finite domain of scalar literals.
 
 ```mace
-enum Fruit: string {
-  Apple /# A default apple label,
-  Strawberry /# A default strawberry label,
-  Pecan /# A default pecan label,
-};
+type Fruit: choice["apple", "strawberry", "pecan"];
+type Status: choice[10, 20, 30];
 ```
 
-This behaves like:
-
-- `Fruit.Apple` => `"Apple"`
-- `Fruit.Strawberry` => `"Strawberry"`
-- `Fruit.Pecan` => `"Pecan"`
-
-#### Explicit `string` enums
-
-Explicit `string` enums assign every member a string literal.
+Choice members may mix scalar literal kinds and may reference other choice
+aliases.
 
 ```mace
-enum Fruit: string {
-  Apple = "apple" /# Lowercase wire value,
-  Strawberry = "strawberry" /# Lowercase wire value,
-  Pecan = "pecan" /# Lowercase wire value,
-};
+type BaseEnv: choice["dev", "prod"];
+type ExtendedEnv: choice[BaseEnv, "preview", true];
 ```
 
-Every explicit value must be a string literal, and enum values must still be
-unique. Enum members may also carry inline `/#` descriptions.
-
-#### Implicit `int` enums
-
-Implicit `int` enum members use their zero-based declaration index.
+Values assigned to a choice-typed field or variable must match one of the
+resolved choice members directly.
 
 ```mace
-enum Status: int {
-  Pending /# Queue item is waiting,
-  Running /# Queue item is active,
-  Done /# Queue item is complete,
-};
+Fruit favorite = "apple";
+Status current = 20;
 ```
 
-This behaves like:
-
-- `Status.Pending` => `0`
-- `Status.Running` => `1`
-- `Status.Done` => `2`
-
-#### Explicit `int` enums
-
-Explicit `int` enums assign every member an integer literal.
-
-```mace
-enum Status: int {
-  Pending = 10,
-  Running = 20,
-  Done = 30,
-};
-```
-
-Every explicit value must be an integer literal, and enum values must still be
-unique.
-
-#### Enum member documentation
-
-Enum members support the same inline `/#` descriptions that schema fields use.
-Use them for short member-level documentation, and use `schema_doc` when you
-need structured docs for the enum declaration itself.
-
-#### Using enum values
-
-Enum values are accessed with the `.` operator.
-
-```mace
-Fruit favorite = Fruit.Apple;
-Status current = Status.Running;
-```
-
-When an enum value is required, you must use the enum member access form. Raw
-backing values such as `"Apple"` or `1` are not assignable to enum-typed
-fields or variables.
-
-Enums are named types, so they can be used anywhere a named non-schema type is
-allowed, including variables, schema fields, schema-mode output fields, and
-imports.
+Choice aliases are named types, so they can be used anywhere a named
+non-schema type is allowed, including variables, schema fields,
+schema-mode output fields, imports, and `variant[...]` members.
 
 ### Imports
 
@@ -424,7 +342,7 @@ from "./shared.mace" import Name, User;
 
 Pair-style entries inside delimited structures use commas:
 
-- enum members
+- choice members inside `choice[...]`
 - schema fields
 - output fields
 - record literal fields
@@ -438,7 +356,7 @@ Current import rules:
 - import paths are resolved relative to the importing file
 - only named imports are supported
 - only symbols exposed through the imported file's output block are importable
-- top-level `type`, `enum`, `schema`, and variable declarations stay internal
+- top-level `type`, `choice`, `schema`, and variable declarations stay internal
   unless they are surfaced through the output block
 - there is no explicit `export` keyword
 - circular imports are rejected
@@ -448,7 +366,7 @@ Imported symbols depend on the imported file's output mode:
 - `output = schema` exposes named type-like fields for import
 - a schema-mode field whose type is a record, or references a schema, imports
   as a schema
-- other schema-mode fields import as types or enums
+- other schema-mode fields import as types or choices
 - `output = data` exposes named values for import
 
 ## Array access
@@ -495,7 +413,7 @@ Rules:
 The processor validates things like:
 
 - duplicate declarations and fields
-- duplicate enum member names and values
+- invalid choice members and duplicate resolved choice values
 - unknown type references
 - type mismatches in variables and expressions
 - schema conformance for records and outputs
