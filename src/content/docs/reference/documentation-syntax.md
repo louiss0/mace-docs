@@ -9,7 +9,7 @@ affect evaluation or output.
 - inline declaration descriptions written with `/#`
 - inline doc blocks attached to output blocks
 - `gen_doc` declarations for named types and variables
-- `schema_doc` declarations for named schemas and enums
+- `schema_doc` declarations for named schemas
 
 ## Inline declaration descriptions
 
@@ -19,7 +19,7 @@ description to a declaration or field.
 Allowed on:
 
 - `type` declarations
-- enum members
+- choice members inside `choice[...]`
 - schema fields
 - output fields
 - output schema fields
@@ -31,11 +31,7 @@ Not allowed on:
 ```mace
 |===|
 type Name: string /# A user display name;
-
-enum Status: string {
-  Pending /# Work has not started,
-  Running /# Work is in progress,
-};
+type Status: choice["Pending", "Running"] /# Runtime status values;
 
 schema User: {
   name: string /# The user's display name,
@@ -69,7 +65,7 @@ This block emits user data.
 ## Documentation declarations
 
 `gen_doc` attaches structured metadata to a named `type` or non-object variable.
-`schema_doc` attaches structured metadata to a named `schema`, `enum`, or object-valued variable.
+`schema_doc` attaches structured metadata to a named `schema` or object-valued variable.
 
 ```mace
 schema User: {
@@ -105,12 +101,9 @@ gen_doc greeting {
 ```
 
 ```mace
-enum Status: string {
-  Pending /# Work has not started,
-  Running /# Work is in progress,
-};
+type Status: choice["Pending", "Running"];
 
-schema_doc Status {
+gen_doc Status {
   summary: "Runtime status.",
 };
 
@@ -129,7 +122,7 @@ schema_doc profile {
 Rules:
 
 - `gen_doc` must appear after the target `type` or non-object variable declaration
-- `schema_doc` must appear after the target `schema`, `enum`, or object-valued variable declaration
+- `schema_doc` must appear after the target `schema` or object-valued variable declaration
 - each target may have at most one documentation declaration
 - `gen_doc` supports `summary` and `description`
 - `schema_doc` supports `summary`, `description`, and `props`
