@@ -3,6 +3,9 @@ title: Formal Specification
 description: The full normative Mace language specification.
 ---
 
+import { Aside } from "@astrojs/starlight/components"
+
+
 # Mace Language Specification
 
 Mace is a deterministic typed configuration language for constructing structured record data and schema definitions.
@@ -53,7 +56,7 @@ Mace processors evaluate source text deterministically and emit structured data 
 
 The emitted representation format is implementation-defined unless explicitly specified by the host environment.
 
-[## Conformance](#mace-language-specification)
+## Conformance
 
 A mace document is a document that: 
 - Conforms to the DSL of mace! 
@@ -74,7 +77,7 @@ A Mace document must conform to these aspects of mace
 
 The rest of the sections are about how Mace is implemented. It's best to think of the rest of the sections as advice, but may and must are mandatory rules!
 
-[## Terminology](#mace-language-specification)
+## Terminology
 
 When talking about Mace pay attention to these terms below. They are here to specify how mace is going to be talked about! Other than these terms! Take everything literally
 
@@ -103,7 +106,7 @@ MAY
   
  **array**
   an ordered sequence of elements. Array elements are addressed by zero-based integer index.
-[## Source Text](#mace-language-specification)
+## Source Text
 
 ### Encoding
 
@@ -178,7 +181,7 @@ Mace recognizes the following whitespace characters outside string content:
 Whitespace **MAY** appear between tokens unless prohibited by a specific grammar
 rule.
 
-[## Lexical Grammar](#mace-language-specification)
+## Lexical Grammar
 
 The *lexical grammar* of Mace defines the tokens recognized by the language
 before parsing. These tokens include identifiers, keywords, literals, strings,
@@ -293,7 +296,7 @@ Mace uses:
 - `?` for optional fields and conditional expressions
 - `/#` for inline declaration descriptions
 
-[## Syntactic Grammar](#mace-language-specification)
+## Syntactic Grammar
 
 The EBNF grammar for Mace will start from structure to syntax! Users will learn about Mace from top to bottom. 
 
@@ -312,482 +315,488 @@ Mace File
     └── Output fields
 ```
 
+<Aside type="note" title="Characters">
+```ebnf 
+letter
+  = "A"…"Z" | "a"…"z" ;
 
->[!info] Characters 
-> ```ebnf 
-> letter
->   = "A"…"Z" | "a"…"z" ;
-> 
-> digit
->   = "0"…"9" ;
-> 
-> hex_digit
->   = digit | "a"…"f" | "A"…"F" ;
-> 
-> identifier
->   = letter , { letter | digit | "_" } ;
-> 
-> character
->   = ? any Unicode scalar value ? ;
-> ```  
+digit
+  = "0"…"9" ;
 
+hex_digit
+  = digit | "a"…"f" | "A"…"F" ;
 
-> [!info] mace_file
-> 
-> ```ebnf
-> mace_file
->   = ws0 ,
->     [ script_block , ws0 ] ,
->     output_block ,
->     ws0 ;
-> 
-> script_block
->   = script_delimiter ,
->     ws0 ,
->     { import_declaration , ws0 } ,
->     { script_item , ws0 } ,
->     script_delimiter ;
-> 
-> script_delimiter
->   = "|" , "=" , "=" , "=" , { "=" } , "|" ;
-> 
-> script_item
->   = declaration ;
-> 
-> declaration
->   = variable_declaration
->   | type_declaration
->   | schema_declaration
->   | gen_doc_declaration
->   | schema_doc_declaration ;
-> ```
+identifier
+  = letter , { letter | digit | "_" } ;
 
-> [!info] output_block
-> 
-> ```ebnf
-> output_directive
->   = "[" , ws0 ,
->     directive_pair , { ws0 , "," , ws0 , directive_pair } ,
->     ws0 , "]" ;
-> 
-> directive_pair
->   = "output" , ws0 , "=" , ws0 , ( "data" | "schema" )
->   | "schema_file" , ws0 , "=" , ws0 , string_literal
->   | "schema" , ws0 , "=" , ws0 , identifier ;
-> 
-> inline_doc_block
->   = block_string ;
-> 
-> output_block
->   = [ output_directive , ws0 , [ inline_doc_block , ws0 ] ] ,
->     ws0 ,
->     "{" , ws0 ,
->     { output_item , ws0 } ,
->     "}" ;
-> ```
-
-> [!info] type_declaration
-> 
-> ```ebnf
-> type_declaration
->   = "type" , ws1 ,
->     identifier , ws0 ,
->     ":" , ws0 ,
->     type_reference ,
->     [ ws0 , inline_description ] ,
->     ws0 , ";" ;
-> ```
-
-> [!info] type_reference
-> 
-> ```ebnf
-> type_reference
->   = primitive_type
->   | array_type
->   | union_type
->   | variant_type
->   | choice_type
->   | identifier ;
-> 
-> primitive_type
->   = "string" | "int" | "float" | "hex_int" | "hex_float" | "boolean" ;
-> 
-> array_type
->   = "array" , ws0 , "<" , ws0 ,
->     type_reference ,
->     ws0 , ">" ;
-> 
-> union_type
->   = "union" , ws0 , "[" , ws0 ,
->     type_reference , { ws0 , "," , ws0 , type_reference } ,
->     ws0 , "]" ;
-> 
-> variant_type
->   = "variant" , ws0 , "[" , ws0 ,
->     type_reference , { ws0 , "," , ws0 , type_reference } ,
->     ws0 , "]" ;
->
-> choice_type
->   = "choice" , ws0 , "[" , ws0 ,
->     choice_member , { ws0 , "," , ws0 , choice_member } ,
->     ws0 , "]" ;
->
-> choice_member
->   = string_literal
->   | int_literal
->   | float_literal
->   | hex_int_literal
->   | hex_float_literal
->   | boolean_literal
->   | identifier ;
-> ```
-
-> [!info] choice_alias_note
-> 
-> ```ebnf
-> choice aliases are introduced through normal type declarations, for example:
-> 
-> type Flavor: choice["Vanilla", "Chocolate"];
-> type Mode: choice[Flavor, 1, true];
-> ```
-
-> [!info] schema_declaration
-> 
-> ```ebnf
-> schema_declaration
->   = "schema" , ws1 ,
->     identifier , ws0 ,
->     ":" , ws0 ,
->     record_type ,
->     ws0 , ";" ;
-> ```
+character
+  = ? any Unicode scalar value ? ;
+```  
+</Aside>
 
 
-> [!info] variable_declaration
-> 
-> ```ebnf
-> variable_declaration
->   = injectable_variable_declaration
->   | initialized_variable_declaration ;
-> 
-> injectable_variable_declaration
->   = "injectable" , ws1 ,
->     type_reference , ws1 ,
->     identifier ,
->     [ ws0 , "=" , ws0 , expression ] ,
->     ws0 , ";" ;
-> 
-> initialized_variable_declaration
->   = type_reference , ws1 ,
->     identifier , ws0 ,
->     "=" , ws0 ,
->     expression ,
->     ws0 , ";" ;
-> ```
+<Aside type="note" title="mace_file">
+
+```ebnf
+mace_file
+  = ws0 ,
+    [ script_block , ws0 ] ,
+    output_block ,
+    ws0 ;
+
+script_block
+  = script_delimiter ,
+    ws0 ,
+    { import_declaration , ws0 } ,
+    { script_item , ws0 } ,
+    script_delimiter ;
+
+script_delimiter
+  = "|" , "=" , "=" , "=" , { "=" } , "|" ;
+
+script_item
+  = declaration ;
+
+declaration
+  = variable_declaration
+  | type_declaration
+  | schema_declaration
+  | gen_doc_declaration
+  | schema_doc_declaration ;
+```
+</Aside>
+
+<Aside type="note" title="output_block">
+
+```ebnf
+output_directive
+  = "[" , ws0 ,
+    directive_pair , { ws0 , "," , ws0 , directive_pair } ,
+    ws0 , "]" ;
+
+directive_pair
+  = "output" , ws0 , "=" , ws0 , ( "data" | "schema" )
+  | "schema_file" , ws0 , "=" , ws0 , string_literal
+  | "schema" , ws0 , "=" , ws0 , identifier ;
+
+inline_doc_block
+  = block_string ;
+
+output_block
+  = [ output_directive , ws0 , [ inline_doc_block , ws0 ] ] ,
+    ws0 ,
+    "{" , ws0 ,
+    { output_item , ws0 } ,
+    "}" ;
+```
+</Aside>
+
+<Aside type="note" title="type_declaration">
+
+```ebnf
+type_declaration
+  = "type" , ws1 ,
+    identifier , ws0 ,
+    ":" , ws0 ,
+    type_reference ,
+    [ ws0 , inline_description ] ,
+    ws0 , ";" ;
+```
+</Aside>
+
+<Aside type="note" title="type_reference">
+
+```ebnf
+type_reference
+  = primitive_type
+  | array_type
+  | union_type
+  | variant_type
+  | choice_type
+  | identifier ;
+
+primitive_type
+  = "string" | "int" | "float" | "hex_int" | "hex_float" | "boolean" ;
+
+array_type
+  = "array" , ws0 , "<" , ws0 ,
+    type_reference ,
+    ws0 , ">" ;
+
+union_type
+  = "union" , ws0 , "[" , ws0 ,
+    type_reference , { ws0 , "," , ws0 , type_reference } ,
+    ws0 , "]" ;
+
+variant_type
+  = "variant" , ws0 , "[" , ws0 ,
+    type_reference , { ws0 , "," , ws0 , type_reference } ,
+    ws0 , "]" ;
+
+choice_type
+  = "choice" , ws0 , "[" , ws0 ,
+    choice_member , { ws0 , "," , ws0 , choice_member } ,
+    ws0 , "]" ;
+
+choice_member
+  = string_literal
+  | int_literal
+  | float_literal
+  | hex_int_literal
+  | hex_float_literal
+  | boolean_literal
+  | identifier ;
+```
+</Aside>
+
+<Aside type="note" title="schema_declaration">
+
+```ebnf
+schema_declaration
+  = "schema" , ws1 ,
+    identifier , ws0 ,
+    ":" , ws0 ,
+    record_type ,
+    ws0 , ";" ;
+```
+</Aside>
 
 
-> [!info] import_declaration
-> 
-> ```ebnf
-> import_declaration
->   = "from" , ws1 , string_literal , ws1 ,
->     "import" , ws1 , import_list ,
->     ws0 , ";" ;
->
->   import_list
->   = imported_identifier , 
->     { ws0 , "," , ws0 , imported_identifier } ;
-> 
->   imported_identifier
->   = identifier , 
->     [ ws0 , ":" , ws0 , identifier ] ;
-> ```
+<Aside type="note" title="variable_declaration">
 
-> [!info] gen_doc_declaration
-> 
-> ```ebnf
-> gen_doc_declaration
->   = "gen_doc" , ws1 ,
->     identifier , ws0 ,
->     "{" , ws0 ,
->     { gen_doc_entry , ws0 } ,
->     "}" ;
-> 
-> gen_doc_entry
->   = "summary" , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator
->   | "description" , ws0 , ":" , ws0 , block_string , ws0 , pair_separator;
-> 
-> schema_doc_declaration
->   = "schema_doc" , ws1 ,
->     identifier , ws0 ,
->     "{" , ws0 ,
->     { schema_doc_entry , ws0 } ,
->     "}" ;
-> 
-> schema_doc_entry
- > = "summary" , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator
-  >| "description" , ws0 , ":" , ws0 , block_string , ws0 , pair_separator
-  >	| "fields" , ws0 , ":" , ws0 , "{" , ws0 , { field_entry , ws0 } , "}" , ws0 ,pair_separator ;
-> 
-> field_entry
->   = identifier , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator ;
-> ```
+```ebnf
+variable_declaration
+  = injectable_variable_declaration
+  | initialized_variable_declaration ;
+
+injectable_variable_declaration
+  = "injectable" , ws1 ,
+    type_reference , ws1 ,
+    identifier ,
+    [ ws0 , "=" , ws0 , expression ] ,
+    ws0 , ";" ;
+
+initialized_variable_declaration
+  = type_reference , ws1 ,
+    identifier , ws0 ,
+    "=" , ws0 ,
+    expression ,
+    ws0 , ";" ;
+```
+</Aside>
 
 
-> [!info] output_item
-> 
-> ```ebnf
-> output_item
->   = output_field ;
-> 
-> output_field
->   = identifier , [ "?" ] , ws0 ,
->     ":" , ws0 ,
->     expression ,
->     field_terminator ;
-> 
-> output_schema_field
->   = identifier , [ "?" ] , ws0 ,
->     ":" , ws0 ,
->     type_reference ,
->     field_terminator ;
-> ```
+<Aside type="note" title="import_declaration">
 
-> [!info] expression
-> 
-> ```ebnf
-> expression
->   = conditional_expression ;
-> 
-> primary_expression
->   = postfix_expression
->   | int_literal
->   | float_literal
->   | string_literal
->   | boolean_literal
->   | array_literal
->   | record_literal ;
-> 
-> postfix_expression
->   = postfix_target , { postfix_suffix } ;
-> 
-> postfix_target
->   = identifier
->   | self_reference
->   | "(" , expression , ")" ;
-> 
-> postfix_suffix
->   = member_access_suffix
->   | array_access_suffix ;
-> 
-> member_access_suffix
->   = "." , identifier ;
-> 
-> array_access_suffix
->   = "[" , ws0 , int_literal , ws0 , "]" ;
-> 
-> self_reference
->   = "$self" , "." , identifier , { "." , identifier } ;
-> 
-> unary_expression
->   = primary_expression
->   | "!" unary_expression
->   | "~" unary_expression
->   | "+" unary_expression
->   | "-" unary_expression ;
-> 
-> exponent_expression
->   = unary_expression
->   | unary_expression "**" exponent_expression ;
-> 
-> multiplicative_expression
->   = exponent_expression
->   | multiplicative_expression "*" exponent_expression
->   | multiplicative_expression "/" exponent_expression
->   | multiplicative_expression "%" exponent_expression ;
-> 
-> additive_expression
->   = multiplicative_expression
->   | additive_expression "+" multiplicative_expression
->   | additive_expression "-" multiplicative_expression ;
-> 
-> shift_expression
->   = additive_expression
->   | shift_expression "<<" additive_expression
->   | shift_expression ">>" additive_expression
->   | shift_expression ">>>" additive_expression ;
-> 
-> relational_expression
->   = shift_expression
->   | relational_expression "<" shift_expression
->   | relational_expression "<=" shift_expression
->   | relational_expression ">" shift_expression
->   | relational_expression ">=" shift_expression ;
-> 
-> equality_expression
->   = relational_expression
->   | equality_expression "==" relational_expression
->   | equality_expression "!=" relational_expression
->   ;
-> 
-> bitwise_and_expression
->   = equality_expression
->   | bitwise_and_expression "&" equality_expression ;
-> 
-> bitwise_xor_expression
->   = bitwise_and_expression
->   | bitwise_xor_expression "^" bitwise_and_expression ;
-> 
-> bitwise_or_expression
->   = bitwise_xor_expression
->   | bitwise_or_expression "|" bitwise_xor_expression ;
-> 
-> logical_and_expression
->   = bitwise_or_expression
->   | logical_and_expression "&&" bitwise_or_expression ;
-> 
-> logical_or_expression
->   = logical_and_expression
->   | logical_or_expression "||" logical_and_expression ;
-> 
-> conditional_expression
->   = logical_or_expression
->   | logical_or_expression , ws0 , "?" , ws0 ,
->     expression , ws0 , ":" , ws0 ,
->     conditional_expression ;
-> 
-> merge_expression
->   = (array_literal | record_literal) ,
->     { ws0 , "<>" , ws0 , (array_literal | record_literal) } ,
->     ws0 ;
-> ```
+```ebnf
+import_declaration
+  = "from" , ws1 , string_literal , ws1 ,
+    "import" , ws1 , import_list ,
+    ws0 , ";" ;
 
-> [!info] string_literal
-> 
-> ```ebnf
-> string_literal
->   = single_string | double_string | block_string ;
-> 
-> single_string
->   = "'" , { single_character } , "'" ;
-> 
-> double_string
->   = '"' , { double_part } , '"' ;
-> 
-> block_string
->   = '"""' , { block_part } , '"""' ;
-> 
-> int_literal
->   = digit , { digit } ;
-> 
-> float_literal
->   = digit , { digit } , "." , digit , { digit } ;
-> 
-> hex_int_literal
->   = ( "0x" | "0X" ) , hex_digit , { hex_digit } ;
-> 
-> hex_float_literal
->   = ( "0x" | "0X" ) , hex_digit , { hex_digit } , "." , hex_digit , { hex_digit } ;
-> 
-> boolean_literal
->   = "true" | "false" ;
-> 
-> single_character
->   = ? any character except ' or newline or backslash ? | escape_sequence ;
-> 
-> double_part
->   = ? any character except " or newline or backslash or start of "$ (" ? | escape_sequence | interpolation ;
-> 
-> block_part
->   = ? any character sequence not containing '"""' or start of "$ (" ? | escape_sequence | interpolation ;
-> 
-> escape_sequence
->   = "\\" , ( "\\" | "'" | '"' | "n" | "r" | "t" ) ;
-> 
-> interpolation
->   = "$" , "(" , expression , ")" ;
-> ```
+  import_list
+  = imported_identifier , 
+    { ws0 , "," , ws0 , imported_identifier } ;
 
-> [!info] record_type
-> 
-> ```ebnf
-> record_type
->   = "{" , ws0 ,
->     { schema_field , ws0 } ,
->     "}" ;
-> 
-> schema_field
->   = identifier , [ "?" ] , ws0 ,
->     ":" , ws0 ,
->     type_reference ,
->     field_terminator ;
-> 
-> field_terminator
->   = ws0 , pair_separator , [ ws0 , inline_description ]
->   | [ ws0 , inline_description ] , [ ws0 , pair_separator ] ;
-> 
-> pair_separator
->   = "," | ";" ;
-> ```
+  imported_identifier
+  = identifier , 
+    [ ws0 , ":" , ws0 , identifier ] ;
+```
+</Aside>
 
-> [!info] array_literal
-> 
-> ```ebnf
-> array_literal
->   = "[" , ws0 ,
->     [ expression , { ws0 , "," , ws0 , expression } ] ,
->     ws0 , "]" ;
-> ```
+<Aside type="note" title="gen_doc_declaration">
 
-> [!info] record_literal
-> 
-> ```ebnf
-> record_literal
->   = "{" , ws0 ,
->     { record_field , ws0 } ,
->     "}" ;
-> 
-> record_field
->   = identifier , [ "?" ] , ws0 ,
->     ":" , ws0 ,
->     expression ,
->     field_terminator ;
-> ```
+```ebnf
+gen_doc_declaration
+  = "gen_doc" , ws1 ,
+    identifier , ws0 ,
+    "{" , ws0 ,
+    { gen_doc_entry , ws0 } ,
+    "}" ;
+
+gen_doc_entry
+  = "summary" , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator
+  | "description" , ws0 , ":" , ws0 , block_string , ws0 , pair_separator;
+
+schema_doc_declaration
+  = "schema_doc" , ws1 ,
+    identifier , ws0 ,
+    "{" , ws0 ,
+    { schema_doc_entry , ws0 } ,
+    "}" ;
+
+schema_doc_entry
+= "summary" , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator
+| "description" , ws0 , ":" , ws0 , block_string , ws0 , pair_separator
+| "fields" , ws0 , ":" , ws0 , "{" , ws0 , { field_entry , ws0 } , "}" , ws0 ,pair_separator ;
+
+field_entry
+  = identifier , ws0 , ":" , ws0 , string_literal , ws0 , pair_separator ;
+```
+</Aside>
 
 
-> [!info] comment
-> 
-> ```ebnf
-> whitespace
->   = " " | "\t" | newline ;
-> 
-> newline
->   = "\n" | "\r\n" ;
-> 
-> comment
->   = line_comment | block_comment ;
-> 
-> block_comment 
->    = "/*" newline ? any character except \ and * ? "*/" newline;
-> 
-> line_comment
->   = "//" ? any character except \ ? newline;
-> 
-> inline_description
->   = "/#" , ws0 , description_text ;
-> 
-> description_text
->   = ? any character sequence up to but not including ',' ';' or newline ? ;
-> 
-> ws0
->   = { whitespace | comment } ;
-> 
-> ws1
->   = ( whitespace | comment ) , ws0 ;
-> 
-> ```
+<Aside type="note" title="output_item">
 
-[## Static Semantics](#mace-language-specification)
+```ebnf
+output_item
+  = output_field ;
+
+output_field
+  = identifier , [ "?" ] , ws0 ,
+    ":" , ws0 ,
+    expression ,
+    field_terminator ;
+
+output_schema_field
+  = identifier , [ "?" ] , ws0 ,
+    ":" , ws0 ,
+    type_reference ,
+    field_terminator ;
+```
+</Aside>
+
+<Aside type="note" title="expression">
+
+```ebnf
+expression
+  = conditional_expression ;
+
+primary_expression
+  = postfix_expression
+  | int_literal
+  | float_literal
+  | string_literal
+  | boolean_literal
+  | array_literal
+  | record_literal ;
+
+postfix_expression
+  = postfix_target , { postfix_suffix } ;
+
+postfix_target
+  = identifier
+  | self_reference
+  | "(" , expression , ")" ;
+
+postfix_suffix
+  = member_access_suffix
+  | array_access_suffix ;
+
+member_access_suffix
+  = "." , identifier ;
+
+array_access_suffix
+  = "[" , ws0 , int_literal , ws0 , "]" ;
+
+self_reference
+  = "$self" , "." , identifier , { "." , identifier } ;
+
+unary_expression
+  = primary_expression
+  | "!" unary_expression
+  | "~" unary_expression
+  | "+" unary_expression
+  | "-" unary_expression ;
+
+exponent_expression
+  = unary_expression
+  | unary_expression "**" exponent_expression ;
+
+multiplicative_expression
+  = exponent_expression
+  | multiplicative_expression "*" exponent_expression
+  | multiplicative_expression "/" exponent_expression
+  | multiplicative_expression "%" exponent_expression ;
+
+additive_expression
+  = multiplicative_expression
+  | additive_expression "+" multiplicative_expression
+  | additive_expression "-" multiplicative_expression ;
+
+shift_expression
+  = additive_expression
+  | shift_expression "<<" additive_expression
+  | shift_expression ">>" additive_expression
+  | shift_expression ">>>" additive_expression ;
+
+relational_expression
+  = shift_expression
+  | relational_expression "<" shift_expression
+  | relational_expression "<=" shift_expression
+  | relational_expression ">" shift_expression
+  | relational_expression ">=" shift_expression ;
+
+equality_expression
+  = relational_expression
+  | equality_expression "==" relational_expression
+  | equality_expression "!=" relational_expression
+  ;
+
+bitwise_and_expression
+  = equality_expression
+  | bitwise_and_expression "&" equality_expression ;
+
+bitwise_xor_expression
+  = bitwise_and_expression
+  | bitwise_xor_expression "^" bitwise_and_expression ;
+
+bitwise_or_expression
+  = bitwise_xor_expression
+  | bitwise_or_expression "|" bitwise_xor_expression ;
+
+logical_and_expression
+  = bitwise_or_expression
+  | logical_and_expression "&&" bitwise_or_expression ;
+
+logical_or_expression
+  = logical_and_expression
+  | logical_or_expression "||" logical_and_expression ;
+
+conditional_expression
+  = logical_or_expression
+  | logical_or_expression , ws0 , "?" , ws0 ,
+    expression , ws0 , ":" , ws0 ,
+    conditional_expression ;
+
+merge_expression
+  = (array_literal | record_literal) ,
+    { ws0 , "<>" , ws0 , (array_literal | record_literal) } ,
+    ws0 ;
+```
+</Aside>
+
+<Aside type="note" title="string_literal">
+
+```ebnf
+string_literal
+  = single_string | double_string | block_string ;
+
+single_string
+  = "'" , { single_character } , "'" ;
+
+double_string
+  = '"' , { double_part } , '"' ;
+
+block_string
+  = '"""' , { block_part } , '"""' ;
+
+int_literal
+  = digit , { digit } ;
+
+float_literal
+  = digit , { digit } , "." , digit , { digit } ;
+
+hex_int_literal
+  = ( "0x" | "0X" ) , hex_digit , { hex_digit } ;
+
+hex_float_literal
+  = ( "0x" | "0X" ) , hex_digit , { hex_digit } , "." , hex_digit , { hex_digit } ;
+
+boolean_literal
+  = "true" | "false" ;
+
+single_character
+  = ? any character except ' or newline or backslash ? | escape_sequence ;
+
+double_part
+  = ? any character except " or newline or backslash or start of "$ (" ? | escape_sequence | interpolation ;
+
+block_part
+  = ? any character sequence not containing '"""' or start of "$ (" ? | escape_sequence | interpolation ;
+
+escape_sequence
+  = "\\" , ( "\\" | "'" | '"' | "n" | "r" | "t" ) ;
+
+interpolation
+  = "$" , "(" , expression , ")" ;
+```
+</Aside>
+
+<Aside type="note" title="record_type">
+
+```ebnf
+record_type
+  = "{" , ws0 ,
+    { schema_field , ws0 } ,
+    "}" ;
+
+schema_field
+  = identifier , [ "?" ] , ws0 ,
+    ":" , ws0 ,
+    type_reference ,
+    field_terminator ;
+
+field_terminator
+  = ws0 , pair_separator , [ ws0 , inline_description ]
+  | [ ws0 , inline_description ] , [ ws0 , pair_separator ] ;
+
+pair_separator
+  = "," | ";" ;
+```
+</Aside>
+
+<Aside type="note" title="array_literal">
+
+```ebnf
+array_literal
+  = "[" , ws0 ,
+    [ expression , { ws0 , "," , ws0 , expression } ] ,
+    ws0 , "]" ;
+```
+</Aside>
+
+<Aside type="note" title="record_literal">
+
+```ebnf
+record_literal
+  = "{" , ws0 ,
+    { record_field , ws0 } ,
+    "}" ;
+
+record_field
+  = identifier , [ "?" ] , ws0 ,
+    ":" , ws0 ,
+    expression ,
+    field_terminator ;
+```
+</Aside>
+
+
+<Aside type="note" title="comment">
+
+```ebnf
+whitespace
+  = " " | "\t" | newline ;
+
+newline
+  = "\n" | "\r\n" ;
+
+comment
+  = line_comment | block_comment ;
+
+block_comment 
+   = "/*" newline ? any character except \ and * ? "*/" newline;
+
+line_comment
+  = "//" ? any character except \ ? newline;
+
+inline_description
+  = "/#" , ws0 , description_text ;
+
+description_text
+  = ? any character sequence up to but not including ',' ';' or newline ? ;
+
+ws0
+  = { whitespace | comment } ;
+
+ws1
+  = ( whitespace | comment ) , ws0 ;
+
+```
+</Aside>
+
+## Static Semantics
 
 Mace record structures craft smaller records toward a larger record. A record  
 literal creates a record, a nested record literal creates a nested record, an  
@@ -861,7 +870,7 @@ record structure and are not automatically introduced into expression scope.
 
 
 
-[## Type System](#mace-language-specification)
+## Type System
 
 Mace separates the schema plane from the record plane. The schema plane  
 describes which records are well-formed, and the record plane constructs the  
@@ -1074,7 +1083,7 @@ This includes:
 - variant ambiguity,
 - and nested schema validation failures.
 
-[## Evaluation Semantics](#mace-language-specification)
+## Evaluation Semantics
 
 Mace evaluation is deterministic. A document is processed in a fixed order,
 declarations do not mutate after they are established, expressions do not
@@ -1172,7 +1181,7 @@ Two documentation blocks cannot target the same identifier. A duplicate
 documentation target is an error because the resulting documentation metadata
 would be ambiguous.
 
-[## Output Mode Selection](#mace-language-specification)
+## Output Mode Selection
 
 The output block is evaluated according to its `output` directive. If no
 directive list is written, the output block defaults to data mode.
@@ -1190,7 +1199,7 @@ unknown directives, a missing `output` directive in a directive list, and
 schema-only combinations such as `output = schema` with `schema` or
 `schema_file` are rejected before the output fields are evaluated.
 
-[## Data Output Evaluation](#mace-language-specification)
+## Data Output Evaluation
 
 Data output is evaluated from top to bottom. Each field expression is evaluated
 in source order, and the resulting value is stored under that field name in the
@@ -1233,7 +1242,7 @@ type is a record or resolves to a schema is importable as a schema. A field
 whose type resolves to a choice is importable as a choice. Other valid field
 types are importable as type aliases.
 
-[## Expression Evaluation](#mace-language-specification)
+## Expression Evaluation
 
 Expression evaluation follows the parsed expression tree. Operator precedence
 and associativity determine the tree, then evaluation walks that tree according
@@ -1265,7 +1274,7 @@ pairs form a record.
 Array literals evaluate elements in element order. Each element expression is
 evaluated and appended to the resulting array.
 
-[## Operator Precedence](#mace-language-specification)
+## Operator Precedence
 
 Operator precedence determines how expressions group before evaluation. Higher
 precedence binds more tightly.
@@ -1315,7 +1324,7 @@ Modulo evaluates as remainder. Decimal `int % int` produces `int`, decimal
 modulo involving `float` produces `float`, and hexadecimal modulo requires
 `hex_int` operands.
 
-[## Bitwise and Shift Evaluation](#mace-language-specification)
+## Bitwise and Shift Evaluation
 
 Bitwise operators evaluate integer families only. `&`, `|`, and `^` require
 both operands to be `int` or both operands to be `hex_int`.
@@ -1330,7 +1339,7 @@ not be negative.
 Unsigned right shift interprets the left operand as an unsigned 64-bit value
 for the shift step, then stores the result back in the same integer family.
 
-[## Comparison and Equality Evaluation](#mace-language-specification)
+## Comparison and Equality Evaluation
 
 Relational comparisons evaluate numeric operands and return `boolean`. Decimal
 `int` and `float` values can compare with each other. Hexadecimal `hex_int` and
@@ -1344,7 +1353,7 @@ allowed inside the hexadecimal numeric family.
 Equality is not general deep record or array equality. Unsupported equality
 comparisons are rejected.
 
-[## Logical and Conditional Evaluation](#mace-language-specification)
+## Logical and Conditional Evaluation
 
 Logical `&&` short-circuits. The left operand is evaluated first and must be
 `boolean`. If the left operand is `false`, the expression returns `false`
@@ -1358,7 +1367,7 @@ Conditional expressions evaluate the condition first. The condition must be
 `boolean`. If the condition is `true`, only the `then` branch is evaluated. If
 the condition is `false`, only the `else` branch is evaluated.
 
-[## Structural Merge Evaluation](#mace-language-specification)
+## Structural Merge Evaluation
 
 The `<>` operator evaluates both operands and then merges them. Direct merge
 operands must be records or arrays of compatible merge kind.
@@ -1435,7 +1444,7 @@ The document result depends only on the source text, imports, and explicit
 injected values. With the same inputs, evaluation produces the same result or
 the same error.
 
-[## Validation Semantics](#mace-language-specification)
+## Validation Semantics
 
 Mace validation is the semantic process performed after parsing and before
 output emission. A source text is valid only if its declarations, imports,
@@ -1601,7 +1610,7 @@ If validation fails, the processor must reject the source text and report a
 diagnostic describing the invalid construct. A processor must not emit output
 from a source text that fails validation.
 
-[## Processing Model](#mace-language-specification)
+## Processing Model
 
 Here’s the final version, aligned with the current Mace spec.
 
@@ -1610,7 +1619,7 @@ A Mace processor transforms a Mace source text into either a data record or a sc
 
 Processing occurs in ordered phases. An implementation **MAY** combine phases internally, but the observable behavior MUST be equivalent to the order described below.
 
-[## Ordered Model](#mace-language-specification)
+## Ordered Model
 
 ```text
 Read source text
@@ -1914,685 +1923,768 @@ This section focuses on only processor diagnostics! The examples below are suppo
 
 ### File Structure Diagnostics
 
-> [!info] `mace.syntax.empty-file`
-> 
-> Reported when the file contains no parseable tokens.
-> 
-> ```txt
-> expected script block or output block
-> ```
+<Aside type="note" title="`mace.syntax.empty-file`">
 
-> [!info] `mace.syntax.missing-output-block`
-> 
-> Reported when the file does not contain an output block.
-> 
-> ```txt
-> expected output block
-> ```
+Reported when the file contains no parseable tokens.
 
-> [!info] `mace.syntax.unexpected-token-after-script-block`
-> 
-> Reported when a token appears after a script block but before a valid output block.
-> 
-> ```txt
-> expected output block after script block
-> ```
+```txt
+expected script block or output block
+```
+</Aside>
 
-> [!info] `mace.syntax.unexpected-token-after-output-block`
-> 
-> Reported when tokens appear after the output block.
-> 
-> ```txt
-> unexpected token after output block
-> ```
+<Aside type="note" title="`mace.syntax.missing-output-block`">
 
-> [!info] `mace.syntax.missing-output-opening-brace`
-> 
-> Reported when the output block does not begin with `{`.
-> 
-> ```txt
-> expected '{' to start output block
-> ```
+Reported when the file does not contain an output block.
 
-> [!info] `mace.syntax.missing-output-closing-brace`
-> 
-> Reported when the output block begins but does not close.
-> 
-> ```txt
-> expected '}' to close output block
-> ```
+```txt
+expected output block
+```
+</Aside>
 
-> [!info] `mace.syntax.missing-script-opening-delimiter`
-> 
-> Reported when the parser expects a script block delimiter.
-> 
-> ```txt
-> expected script block delimiter
-> ```
+<Aside type="note" title="`mace.syntax.unexpected-token-after-script-block`">
 
-> [!info] `mace.syntax.unterminated-script-block`
-> 
-> Reported when a script block begins but is not closed.
-> 
-> ```txt
-> expected closing script block delimiter
-> ```
+Reported when a token appears after a script block but before a valid output block.
 
-> [!info] `mace.syntax.inconsistent-script-delimiters`
-> 
-> Reported when the opening and closing script delimiters do not match.
-> 
-> ```txt
-> script block delimiters must match
-> ```
+```txt
+expected output block after script block
+```
+</Aside>
 
-> [!info] `mace.syntax.import-after-declaration`
-> 
-> Reported when an import appears after another script declaration.
-> 
-> ```txt
-> imports must appear before other script declarations
-> ```
+<Aside type="note" title="`mace.syntax.unexpected-token-after-output-block`">
+
+Reported when tokens appear after the output block.
+
+```txt
+unexpected token after output block
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.missing-output-opening-brace`">
+
+Reported when the output block does not begin with `{`.
+
+```txt
+expected '{' to start output block
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.missing-output-closing-brace`">
+
+Reported when the output block begins but does not close.
+
+```txt
+expected '}' to close output block
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.missing-script-opening-delimiter`">
+
+Reported when the parser expects a script block delimiter.
+
+```txt
+expected script block delimiter
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.unterminated-script-block`">
+
+Reported when a script block begins but is not closed.
+
+```txt
+expected closing script block delimiter
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.inconsistent-script-delimiters`">
+
+Reported when the opening and closing script delimiters do not match.
+
+```txt
+script block delimiters must match
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.import-after-declaration`">
+
+Reported when an import appears after another script declaration.
+
+```txt
+imports must appear before other script declarations
+```
+</Aside>
 
 ### Import Diagnostics
 
-> [!info] `mace.syntax.malformed-import`
-> 
-> Generic fallback for malformed import declarations.
-> 
-> ```txt
-> malformed import declaration
-> ```
+<Aside type="note" title="`mace.syntax.malformed-import`">
 
-> [!info] `mace.syntax.import-missing-from`
-> 
-> Reported when an import declaration does not begin with `from`.
-> 
-> ```txt
-> expected 'from' to start import declaration
-> ```
+Generic fallback for malformed import declarations.
 
-> [!info] `mace.syntax.import-missing-path`
-> 
-> Reported when the import path string literal is missing.
-> 
-> ```txt
-> expected string literal import path after 'from'
-> ```
+```txt
+malformed import declaration
+```
+</Aside>
 
-> [!info] `mace.syntax.import-missing-import-keyword`
-> 
-> Reported when the `import` keyword is missing.
-> 
-> ```txt
-> expected 'import' after import path
-> ```
+<Aside type="note" title="`mace.syntax.import-missing-from`">
 
-> [!info] `mace.syntax.import-missing-name`
-> 
-> Reported when no imported identifier is provided.
-> 
-> ```txt
-> expected imported identifier
-> ```
+Reported when an import declaration does not begin with `from`.
 
-> [!info] `mace.syntax.import-missing-name-after-comma`
-> 
-> Reported when an identifier is missing after `,` in an import list.
-> 
-> ```txt
-> expected imported identifier after ','
-> ```
+```txt
+expected 'from' to start import declaration
+```
+</Aside>
 
-> [!info] `mace.syntax.import-missing-semicolon`
-> 
-> Reported when an import declaration is missing `;`.
-> 
-> ```txt
-> expected ';' after import declaration
-> ```
+<Aside type="note" title="`mace.syntax.import-missing-path`">
+
+Reported when the import path string literal is missing.
+
+```txt
+expected string literal import path after 'from'
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.import-missing-import-keyword`">
+
+Reported when the `import` keyword is missing.
+
+```txt
+expected 'import' after import path
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.import-missing-name`">
+
+Reported when no imported identifier is provided.
+
+```txt
+expected imported identifier
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.import-missing-name-after-comma`">
+
+Reported when an identifier is missing after `,` in an import list.
+
+```txt
+expected imported identifier after ','
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.import-missing-semicolon`">
+
+Reported when an import declaration is missing `;`.
+
+```txt
+expected ';' after import declaration
+```
+</Aside>
 
 ### Directive Diagnostics
 
-> [!info] `mace.syntax.malformed-directive-list`
-> 
-> Generic fallback for malformed directive lists.
-> 
-> ```txt
-> malformed output directive list
-> ```
+<Aside type="note" title="`mace.syntax.malformed-directive-list`">
 
-> [!info] `mace.syntax.directive-missing-opening-bracket`
-> 
-> Reported when a directive list does not begin with `[`.
-> 
-> ```txt
-> expected '[' to start output directive list
-> ```
+Generic fallback for malformed directive lists.
 
-> [!info] `mace.syntax.directive-missing-closing-bracket`
-> 
-> Reported when a directive list does not close with `]`.
-> 
-> ```txt
-> expected ']' after output directive list
-> ```
+```txt
+malformed output directive list
+```
+</Aside>
 
-> [!info] `mace.syntax.directive-missing-pair`
-> 
-> Reported when a directive pair is missing.
-> 
-> ```txt
-> expected directive pair
-> ```
+<Aside type="note" title="`mace.syntax.directive-missing-opening-bracket`">
 
-> [!info] `mace.syntax.directive-output-missing-equals`
-> 
-> Reported when `output` is not followed by `=`.
-> 
-> ```txt
-> expected '=' after output
-> ```
+Reported when a directive list does not begin with `[`.
 
-> [!info] `mace.syntax.directive-output-invalid-value`
-> 
-> Reported when `output` uses a value other than `data` or `schema`.
-> 
-> ```txt
-> expected output value to be 'data' or 'schema'
-> ```
+```txt
+expected '[' to start output directive list
+```
+</Aside>
 
-> [!info] `mace.syntax.directive-schema-file-missing-equals`
-> 
-> Reported when `schema_file` is not followed by `=`.
-> 
-> ```txt
-> expected '=' after schema_file
-> ```
+<Aside type="note" title="`mace.syntax.directive-missing-closing-bracket`">
 
-> [!info] `mace.syntax.directive-schema-file-missing-string`
-> 
-> Reported when `schema_file` is not followed by a string literal.
-> 
-> ```txt
-> expected string literal after schema_file =
-> ```
+Reported when a directive list does not close with `]`.
 
-> [!info] `mace.syntax.directive-schema-missing-equals`
-> 
-> Reported when `schema` is not followed by `=`.
-> 
-> ```txt
-> expected '=' after schema
-> ```
+```txt
+expected ']' after output directive list
+```
+</Aside>
 
-> [!info] `mace.syntax.directive-schema-missing-name`
-> 
-> Reported when `schema =` is not followed by a schema name.
-> 
-> ```txt
-> expected schema name after schema =
-> ```
+<Aside type="note" title="`mace.syntax.directive-missing-pair`">
+
+Reported when a directive pair is missing.
+
+```txt
+expected directive pair
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-output-missing-equals`">
+
+Reported when `output` is not followed by `=`.
+
+```txt
+expected '=' after output
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-output-invalid-value`">
+
+Reported when `output` uses a value other than `data` or `schema`.
+
+```txt
+expected output value to be 'data' or 'schema'
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-schema-file-missing-equals`">
+
+Reported when `schema_file` is not followed by `=`.
+
+```txt
+expected '=' after schema_file
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-schema-file-missing-string`">
+
+Reported when `schema_file` is not followed by a string literal.
+
+```txt
+expected string literal after schema_file =
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-schema-missing-equals`">
+
+Reported when `schema` is not followed by `=`.
+
+```txt
+expected '=' after schema
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.directive-schema-missing-name`">
+
+Reported when `schema =` is not followed by a schema name.
+
+```txt
+expected schema name after schema =
+```
+</Aside>
 
 ### Declaration Diagnostics
 
-> [!info] `mace.syntax.malformed-variable-declaration`
-> 
-> Generic fallback for malformed variable declarations.
-> 
-> ```txt
-> malformed variable declaration
-> ```
+<Aside type="note" title="`mace.syntax.malformed-variable-declaration`">
 
-> [!info] `mace.syntax.variable-missing-type`
-> 
-> Reported when a variable declaration is missing a type reference.
-> 
-> ```txt
-> expected type reference in variable declaration
-> ```
+Generic fallback for malformed variable declarations.
 
-> [!info] `mace.syntax.variable-missing-name`
-> 
-> Reported when a variable declaration is missing an identifier.
-> 
-> ```txt
-> expected variable name
-> ```
+```txt
+malformed variable declaration
+```
+</Aside>
 
-> [!info] `mace.syntax.variable-missing-initializer-equals`
-> 
-> Reported when a non-injectable variable declaration is missing `=`.
-> 
-> ```txt
-> expected '=' in variable declaration
-> ```
+<Aside type="note" title="`mace.syntax.variable-missing-type`">
 
-> [!info] `mace.syntax.variable-inline-description-not-allowed`
-> 
-> Reported when a variable declaration contains an inline `/#` description.
-> 
-> ```txt
-> inline descriptions are not allowed on variable declarations
-> ```
+Reported when a variable declaration is missing a type reference.
 
-> [!info] `mace.syntax.variable-missing-semicolon`
-> 
-> Reported when a variable declaration is missing `;`.
-> 
-> ```txt
-> expected ';' after variable declaration
-> ```
+```txt
+expected type reference in variable declaration
+```
+</Aside>
 
-> [!info] `mace.syntax.malformed-type-declaration`
-> 
-> Generic fallback for malformed type declarations.
-> 
-> ```txt
-> malformed type declaration
-> ```
+<Aside type="note" title="`mace.syntax.variable-missing-name`">
 
-> [!info] `mace.syntax.type-missing-name`
-> 
-> Reported when a type declaration is missing its identifier.
-> 
-> ```txt
-> expected type declaration name
-> ```
+Reported when a variable declaration is missing an identifier.
 
-> [!info] `mace.syntax.type-missing-colon`
-> 
-> Reported when a type declaration is missing `:`.
-> 
-> ```txt
-> expected ':' after type name
-> ```
+```txt
+expected variable name
+```
+</Aside>
 
-> [!info] `mace.syntax.type-missing-reference`
-> 
-> Reported when a type declaration is missing a type reference.
-> 
-> ```txt
-> expected type reference
-> ```
+<Aside type="note" title="`mace.syntax.variable-missing-initializer-equals`">
 
-> [!info] `mace.syntax.type-missing-semicolon`
-> 
-> Reported when a type declaration is missing `;`.
-> 
-> ```txt
-> expected ';' after type declaration
-> ```
+Reported when a non-injectable variable declaration is missing `=`.
 
-> [!info] `mace.syntax.malformed-schema`
-> 
-> Generic fallback for malformed schema declarations.
-> 
-> ```txt
-> malformed schema declaration
-> ```
+```txt
+expected '=' in variable declaration
+```
+</Aside>
 
-> [!info] `mace.syntax.schema-missing-name`
-> 
-> Reported when a schema declaration is missing its identifier.
-> 
-> ```txt
-> expected schema name
-> ```
+<Aside type="note" title="`mace.syntax.variable-inline-description-not-allowed`">
 
-> [!info] `mace.syntax.schema-missing-colon`
-> 
-> Reported when a schema declaration is missing `:`.
-> 
-> ```txt
-> expected ':' after schema name
-> ```
+Reported when a variable declaration contains an inline `/#` description.
 
-> [!info] `mace.syntax.malformed-choice-type`
-> 
-> Generic fallback for malformed `choice[...]` type references.
-> 
-> ```txt
-> malformed choice type
-> ```
+```txt
+inline descriptions are not allowed on variable declarations
+```
+</Aside>
 
-> [!info] `mace.syntax.choice-missing-opening-bracket`
-> 
-> Reported when `choice` is not followed by `[`.
-> 
-> ```txt
-> expected '[' after choice type
-> ```
+<Aside type="note" title="`mace.syntax.variable-missing-semicolon`">
 
-> [!info] `mace.syntax.choice-missing-closing-bracket`
-> 
-> Reported when a `choice[...]` type does not close.
-> 
-> ```txt
-> expected ']' after choice type
-> ```
+Reported when a variable declaration is missing `;`.
 
-> [!info] `mace.syntax.choice-invalid-member`
-> 
-> Reported when a choice member is not a literal or a named choice alias.
-> 
-> ```txt
-> expected literal or choice name
-> ```
+```txt
+expected ';' after variable declaration
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.malformed-type-declaration`">
+
+Generic fallback for malformed type declarations.
+
+```txt
+malformed type declaration
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.type-missing-name`">
+
+Reported when a type declaration is missing its identifier.
+
+```txt
+expected type declaration name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.type-missing-colon`">
+
+Reported when a type declaration is missing `:`.
+
+```txt
+expected ':' after type name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.type-missing-reference`">
+
+Reported when a type declaration is missing a type reference.
+
+```txt
+expected type reference
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.type-missing-semicolon`">
+
+Reported when a type declaration is missing `;`.
+
+```txt
+expected ';' after type declaration
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.malformed-schema`">
+
+Generic fallback for malformed schema declarations.
+
+```txt
+malformed schema declaration
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.schema-missing-name`">
+
+Reported when a schema declaration is missing its identifier.
+
+```txt
+expected schema name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.schema-missing-colon`">
+
+Reported when a schema declaration is missing `:`.
+
+```txt
+expected ':' after schema name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.malformed-choice-type`">
+
+Generic fallback for malformed `choice[...]` type references.
+
+```txt
+malformed choice type
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.choice-missing-opening-bracket`">
+
+Reported when `choice` is not followed by `[`.
+
+```txt
+expected '[' after choice type
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.choice-missing-closing-bracket`">
+
+Reported when a `choice[...]` type does not close.
+
+```txt
+expected ']' after choice type
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.choice-invalid-member`">
+
+Reported when a choice member is not a literal or a named choice alias.
+
+```txt
+expected literal or choice name
+```
+</Aside>
 
 ### Type Diagnostics
 
-> [!info] `mace.syntax.malformed-type-reference`
-> 
-> Generic fallback for malformed type references.
-> 
-> ```txt
-> malformed type reference
-> ```
+<Aside type="note" title="`mace.syntax.malformed-type-reference`">
 
-> [!info] `mace.syntax.record-type-missing-opening-brace`
-> 
-> Reported when a record type does not begin with `{`.
-> 
-> ```txt
-> expected '{' to start record type
-> ```
+Generic fallback for malformed type references.
 
-> [!info] `mace.syntax.record-type-missing-closing-brace`
-> 
-> Reported when a record type is missing `}`.
-> 
-> ```txt
-> expected '}' to close record type
-> ```
+```txt
+malformed type reference
+```
+</Aside>
 
-> [!info] `mace.syntax.record-field-missing-name`
-> 
-> Reported when a record field identifier is missing.
-> 
-> ```txt
-> expected field name
-> ```
+<Aside type="note" title="`mace.syntax.record-type-missing-opening-brace`">
 
-> [!info] `mace.syntax.record-field-missing-colon`
-> 
-> Reported when a record field is missing `:`.
-> 
-> ```txt
-> expected ':' after field name
-> ```
+Reported when a record type does not begin with `{`.
 
-> [!info] `mace.syntax.record-field-missing-type`
-> 
-> Reported when a record field is missing a type reference.
-> 
-> ```txt
-> expected type reference after ':'
-> ```
+```txt
+expected '{' to start record type
+```
+</Aside>
 
-> [!info] `mace.syntax.array-type-missing-opening-angle`
-> 
-> Reported when `array` is not followed by `<`.
-> 
-> ```txt
-> expected '<' after array
-> ```
+<Aside type="note" title="`mace.syntax.record-type-missing-closing-brace`">
 
-> [!info] `mace.syntax.array-type-missing-closing-angle`
-> 
-> Reported when an array type is missing `>`.
-> 
-> ```txt
-> expected '>' after array element type
-> ```
+Reported when a record type is missing `}`.
 
-> [!info] `mace.syntax.union-type-missing-opening-bracket`
-> 
-> Reported when a union type does not begin with `[`.
-> 
-> ```txt
-> expected '[' after union
-> ```
+```txt
+expected '}' to close record type
+```
+</Aside>
 
-> [!info] `mace.syntax.union-type-missing-closing-bracket`
-> 
-> Reported when a union type is missing `]`.
-> 
-> ```txt
-> expected ']' after union members
-> ```
+<Aside type="note" title="`mace.syntax.record-field-missing-name`">
 
-> [!info] `mace.syntax.variant-type-missing-opening-bracket`
-> 
-> Reported when a variant type does not begin with `[`.
-> 
-> ```txt
-> expected '[' after variant
-> ```
+Reported when a record field identifier is missing.
 
-> [!info] `mace.syntax.variant-type-missing-closing-bracket`
-> 
-> Reported when a variant type is missing `]`.
-> 
-> ```txt
-> expected ']' after variant members
-> ```
+```txt
+expected field name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.record-field-missing-colon`">
+
+Reported when a record field is missing `:`.
+
+```txt
+expected ':' after field name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.record-field-missing-type`">
+
+Reported when a record field is missing a type reference.
+
+```txt
+expected type reference after ':'
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.array-type-missing-opening-angle`">
+
+Reported when `array` is not followed by `<`.
+
+```txt
+expected '<' after array
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.array-type-missing-closing-angle`">
+
+Reported when an array type is missing `>`.
+
+```txt
+expected '>' after array element type
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.union-type-missing-opening-bracket`">
+
+Reported when a union type does not begin with `[`.
+
+```txt
+expected '[' after union
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.union-type-missing-closing-bracket`">
+
+Reported when a union type is missing `]`.
+
+```txt
+expected ']' after union members
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.variant-type-missing-opening-bracket`">
+
+Reported when a variant type does not begin with `[`.
+
+```txt
+expected '[' after variant
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.variant-type-missing-closing-bracket`">
+
+Reported when a variant type is missing `]`.
+
+```txt
+expected ']' after variant members
+```
+</Aside>
 
 ### Expression Diagnostics
 
-> [!info] `mace.syntax.missing-expression`
-> 
-> Reported when an expression is expected but not present.
-> 
-> ```txt
-> expected expression
-> ```
+<Aside type="note" title="`mace.syntax.missing-expression`">
 
-> [!info] `mace.syntax.unclosed-grouping`
-> 
-> Reported when a grouped expression does not close with `)`.
-> 
-> ```txt
-> expected ')' after expression
-> ```
+Reported when an expression is expected but not present.
 
-> [!info] `mace.syntax.self-missing-dot`
-> 
-> Reported when `$self` is not followed by `.`.
-> 
-> ```txt
-> expected '.' after '$self'
-> ```
+```txt
+expected expression
+```
+</Aside>
 
-> [!info] `mace.syntax.self-missing-field`
-> 
-> Reported when `$self.` is not followed by an identifier.
-> 
-> ```txt
-> expected field name after '$self.'
-> ```
+<Aside type="note" title="`mace.syntax.unclosed-grouping`">
 
-> [!info] `mace.syntax.array-literal-missing-closing-bracket`
-> 
-> Reported when an array literal is missing `]`.
-> 
-> ```txt
-> expected ']' to close array literal
-> ```
+Reported when a grouped expression does not close with `)`.
 
-> [!info] `mace.syntax.record-literal-missing-closing-brace`
-> 
-> Reported when a record literal is missing `}`.
-> 
-> ```txt
-> expected '}' to close record literal
-> ```
+```txt
+expected ')' after expression
+```
+</Aside>
 
-> [!info] `mace.syntax.record-field-missing-separator`
-> 
-> Reported when a record field is missing `,` or `;`.
-> 
-> ```txt
-> expected ',' or ';' after record field
-> ```
+<Aside type="note" title="`mace.syntax.self-missing-dot`">
 
-> [!info] `mace.syntax.member-access-missing-name`
-> 
-> Reported when member access ends after `.`.
-> 
-> ```txt
-> expected member name after '.'
-> ```
+Reported when `$self` is not followed by `.`.
 
-> [!info] `mace.syntax.invalid-array-access-index`
-> 
-> Reported when array access does not use an integer index.
-> 
-> ```txt
-> expected integer index in array access
-> ```
+```txt
+expected '.' after '$self'
+```
+</Aside>
 
-> [!info] `mace.syntax.array-access-missing-closing-bracket`
-> 
-> Reported when array access is missing `]`.
-> 
-> ```txt
-> expected ']' after array access index
-> ```
+<Aside type="note" title="`mace.syntax.self-missing-field`">
 
-> [!info] `mace.syntax.conditional-missing-colon`
-> 
-> Reported when a conditional expression is missing `:`.
-> 
-> ```txt
-> expected ':' in conditional expression
-> ```
+Reported when `$self.` is not followed by an identifier.
+
+```txt
+expected field name after '$self.'
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.array-literal-missing-closing-bracket`">
+
+Reported when an array literal is missing `]`.
+
+```txt
+expected ']' to close array literal
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.record-literal-missing-closing-brace`">
+
+Reported when a record literal is missing `}`.
+
+```txt
+expected '}' to close record literal
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.record-field-missing-separator`">
+
+Reported when a record field is missing `,` or `;`.
+
+```txt
+expected ',' or ';' after record field
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.member-access-missing-name`">
+
+Reported when member access ends after `.`.
+
+```txt
+expected member name after '.'
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.invalid-array-access-index`">
+
+Reported when array access does not use an integer index.
+
+```txt
+expected integer index in array access
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.array-access-missing-closing-bracket`">
+
+Reported when array access is missing `]`.
+
+```txt
+expected ']' after array access index
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.conditional-missing-colon`">
+
+Reported when a conditional expression is missing `:`.
+
+```txt
+expected ':' in conditional expression
+```
+</Aside>
 
 ### Output Field Diagnostics
 
-> [!info] `mace.syntax.malformed-output-field`
-> 
-> Generic fallback for malformed output fields.
-> 
-> ```txt
-> malformed output field
-> ```
+<Aside type="note" title="`mace.syntax.malformed-output-field`">
 
-> [!info] `mace.syntax.output-field-missing-name`
-> 
-> Reported when an output field identifier is missing.
-> 
-> ```txt
-> expected output field name
-> ```
+Generic fallback for malformed output fields.
 
-> [!info] `mace.syntax.output-field-missing-colon`
-> 
-> Reported when an output field is missing `:`.
-> 
-> ```txt
-> expected ':' after output field name
-> ```
+```txt
+malformed output field
+```
+</Aside>
 
-> [!info] `mace.syntax.output-field-missing-value`
-> 
-> Reported when an output field is missing a value expression.
-> 
-> ```txt
-> expected output field value
-> ```
+<Aside type="note" title="`mace.syntax.output-field-missing-name`">
 
-> [!info] `mace.syntax.output-field-missing-separator`
-> 
-> Reported when an output field is missing `,` or `;`.
-> 
-> ```txt
-> expected ',' or ';' after output field
-> ```
+Reported when an output field identifier is missing.
+
+```txt
+expected output field name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.output-field-missing-colon`">
+
+Reported when an output field is missing `:`.
+
+```txt
+expected ':' after output field name
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.output-field-missing-value`">
+
+Reported when an output field is missing a value expression.
+
+```txt
+expected output field value
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.output-field-missing-separator`">
+
+Reported when an output field is missing `,` or `;`.
+
+```txt
+expected ',' or ';' after output field
+```
+</Aside>
 
 ### Documentation Diagnostics
 
-> [!info] `mace.doc.malformed-gen-doc`
-> 
-> Generic fallback for malformed `gen_doc` declarations.
-> 
-> ```txt
-> malformed gen_doc declaration
-> ```
+<Aside type="note" title="`mace.doc.malformed-gen-doc`">
 
-> [!info] `mace.doc.malformed-schema-doc`
-> 
-> Generic fallback for malformed `schema_doc` declarations.
-> 
-> ```txt
-> malformed schema_doc declaration
-> ```
+Generic fallback for malformed `gen_doc` declarations.
 
-> [!info] `mace.doc.missing-target`
-> 
-> Reported when a documentation declaration is missing its target identifier.
-> 
-> ```txt
-> expected documentation target
-> ```
+```txt
+malformed gen_doc declaration
+```
+</Aside>
 
-> [!info] `mace.doc.duplicate-entry`
-> 
-> Reported when a documentation declaration repeats an entry.
-> 
-> ```txt
-> duplicate documentation entry
-> ```
+<Aside type="note" title="`mace.doc.malformed-schema-doc`">
 
-> [!info] `mace.doc.unknown-entry`
-> 
-> Reported when a documentation declaration uses an unknown entry.
-> 
-> ```txt
-> unknown documentation entry
-> ```
+Generic fallback for malformed `schema_doc` declarations.
 
-> [!info] `mace.doc.inline-description-not-allowed`
-> 
-> Reported when inline descriptions are used in invalid locations.
-> 
-> ```txt
-> inline descriptions are not allowed here
-> ```
+```txt
+malformed schema_doc declaration
+```
+</Aside>
 
-> [!info] `mace.doc.duplicate-inline-description`
-> 
-> Reported when more than one inline description exists on the same declaration or field.
-> 
-> ```txt
-> duplicate inline description
-> ```
+<Aside type="note" title="`mace.doc.missing-target`">
 
-> [!info] `mace.doc.output-doc-requires-directive`
-> 
-> Reported when an output doc block appears without a directive list.
-> 
-> ```txt
-> output doc block requires a directive list
-> ```
+Reported when a documentation declaration is missing its target identifier.
 
-> [!info] `mace.doc.output-doc-must-be-block-string`
-> 
-> Reported when an output doc block does not use a multiline block string.
-> 
-> ```txt
-> output doc block must use a block string
-> ```
+```txt
+expected documentation target
+```
+</Aside>
 
-> [!info] `mace.syntax.unexpected-token`
-> 
-> Generic parser fallback diagnostic.
-> 
-> Used when no more specific parser diagnostic applies.
-> 
-> ```txt
-> unexpected token '<token>'; expected <syntax>
-> ```
+<Aside type="note" title="`mace.doc.duplicate-entry`">
+
+Reported when a documentation declaration repeats an entry.
+
+```txt
+duplicate documentation entry
+```
+</Aside>
+
+<Aside type="note" title="`mace.doc.unknown-entry`">
+
+Reported when a documentation declaration uses an unknown entry.
+
+```txt
+unknown documentation entry
+```
+</Aside>
+
+<Aside type="note" title="`mace.doc.inline-description-not-allowed`">
+
+Reported when inline descriptions are used in invalid locations.
+
+```txt
+inline descriptions are not allowed here
+```
+</Aside>
+
+<Aside type="note" title="`mace.doc.duplicate-inline-description`">
+
+Reported when more than one inline description exists on the same declaration or field.
+
+```txt
+duplicate inline description
+```
+</Aside>
+
+<Aside type="note" title="`mace.doc.output-doc-requires-directive`">
+
+Reported when an output doc block appears without a directive list.
+
+```txt
+output doc block requires a directive list
+```
+</Aside>
+
+<Aside type="note" title="`mace.doc.output-doc-must-be-block-string`">
+
+Reported when an output doc block does not use a multiline block string.
+
+```txt
+output doc block must use a block string
+```
+</Aside>
+
+<Aside type="note" title="`mace.syntax.unexpected-token`">
+
+Generic parser fallback diagnostic.
+
+Used when no more specific parser diagnostic applies.
+
+```txt
+unexpected token '<token>'; expected <syntax>
+```
+</Aside>
 
 The parser and analyzer currently classify parser failures into categories such as malformed imports, malformed directive lists, malformed choice types, malformed schemas, malformed variable declarations, malformed output fields, invalid array access indexes, and unexpected tokens. Lexer failures currently fall back to `mace.syntax.unexpected-token`.
 ## Security Considerations

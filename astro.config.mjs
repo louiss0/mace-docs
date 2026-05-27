@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import maceBrand from './src/assets/mace-brand.png';
+import { ebnfLanguage } from './src/expressive-code/ebnf-language.mjs';
 import { maceLanguage } from './src/expressive-code/mace-language.mjs';
 
 // https://astro.build/config
@@ -18,7 +19,7 @@ export default defineConfig({
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/louiss0/mace' }],
 			expressiveCode: {
 				shiki: {
-					langs: [maceLanguage],
+					langs: [maceLanguage, ebnfLanguage],
 					themes: {
 						dark: 'material-theme-darker',
 						light: 'material-theme-lighter',
