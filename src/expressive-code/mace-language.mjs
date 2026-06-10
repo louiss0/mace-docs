@@ -84,7 +84,7 @@ export const maceLanguage = {
 		declarations: {
 			patterns: [
 				{
-					match: '\\b(from|import|type|schema|gen_doc|schema_doc|enum|injectable)\\b',
+					match: '\\b(from|import|type|schema|gen_doc|schema_doc|enum|nullable|parse|parse_file|null)\\b',
 					captures: {
 						1: { name: 'keyword.control.mace' },
 					},

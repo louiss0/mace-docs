@@ -197,6 +197,34 @@ Data mode with schema validation against a named schema.
 
 Data mode with schema validation loaded from another Mace file.
 
+### `output = data, parse = <Schema>`
+
+Validates the host-provided runtime input record against the named schema, then
+exposes each schema field as a variable inside the output block.
+
+```mace
+|===|
+schema Runtime: { env: string; };
+|===|
+[output = data, parse = Runtime]
+{
+  env: env,
+}
+```
+
+### `output = data, parse_file = "<path>"`
+
+Loads schema declarations from the referenced Mace file, validates the
+host-provided runtime input record against those declarations, and exposes
+the matching fields as variables inside the output block.
+
+```mace
+[output = data, parse_file = "./runtime.mace"]
+{
+  env: env,
+}
+```
+
 ### `output = schema`
 
 Schema mode. Output fields contain type references instead of expressions.
@@ -204,7 +232,9 @@ Schema mode. Output fields contain type references instead of expressions.
 ### Combination rules
 
 - `output = schema` must be used alone
-- `output = data` may be combined with `schema` or `schema_file`, but not both
+- `output = data` may be combined with `schema`, `schema_file`, `parse`, or `parse_file`
+- `parse = <Schema>` and `schema` are mutually exclusive — `parse` is self-contained
+- `parse_file = "<path>"` and `schema_file` are mutually exclusive — `parse_file` is self-contained
 - duplicate output directives are invalid
 - duplicate output field names are invalid
 
@@ -268,14 +298,14 @@ The script block is delimited by matching pipe delimiters with at least three
 
 ### Variables
 
-Variables are immutable and must have an explicit type. Regular variables
-must have an initializer. The `injectable` keyword marks a variable whose value
-is supplied at runtime, so its initializer may be omitted.
+Variables are immutable and must have an explicit type. Variables must have an
+initializer. The `nullable` keyword marks a variable that may evaluate to
+`null`.
 
 ```mace
 int age = 27;
 string name = "Ada";
-injectable string env;
+nullable string env = null;
 ```
 
 ### Type declarations

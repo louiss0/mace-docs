@@ -207,8 +207,8 @@ keywords by the grammar.
 The reserved keywords are:
 
 `from`, `import`, `type`, `schema`, `choice`, `string`, `int`,
-`float`, `boolean`, `array`, `union`, `variant`, `injectable`, `gen_doc`,
-`schema_doc`, `true`, and `false`.
+`float`, `boolean`, `array`, `union`, `variant`, `nullable`, `parse`,
+`parse_file`, `null`, `gen_doc`, `schema_doc`, `true`, `false`, and `in`.
 
 Directive words such as `output`, `data`, and `schema_file` are interpreted
 inside directive lists.
@@ -377,7 +377,9 @@ output_directive
 directive_pair
   = "output" , ws0 , "=" , ws0 , ( "data" | "schema" )
   | "schema_file" , ws0 , "=" , ws0 , string_literal
-  | "schema" , ws0 , "=" , ws0 , identifier ;
+  | "schema" , ws0 , "=" , ws0 , identifier
+  | "parse" , ws0 , "=" , ws0 , identifier
+  | "parse_file" , ws0 , "=" , ws0 , string_literal ;
 
 inline_doc_block
   = block_string ;
@@ -466,18 +468,8 @@ schema_declaration
 
 ```ebnf
 variable_declaration
-  = injectable_variable_declaration
-  | initialized_variable_declaration ;
-
-injectable_variable_declaration
-  = "injectable" , ws1 ,
+  = [ "nullable" , ws1 ] ,
     type_reference , ws1 ,
-    identifier ,
-    [ ws0 , "=" , ws0 , expression ] ,
-    ws0 , ";" ;
-
-initialized_variable_declaration
-  = type_reference , ws1 ,
     identifier , ws0 ,
     "=" , ws0 ,
     expression ,
@@ -1154,11 +1146,10 @@ Variables evaluate by type, then value. The declared type is resolved first,
 the initializer expression is evaluated, and then the value is validated
 against the declared type before being added to the value environment.
 
-Injectable variables evaluate from runtime input when a matching injected value
-is provided. If an injectable has no injected value but has an initializer, the
-initializer is evaluated. If an injectable has neither an injected value nor an
-initializer, the name is marked as missing and an error is produced only if the
-missing value is later referenced.
+Nullable variables evaluate their initializer and accept `null` as a valid
+result. A variable declared with the `nullable` keyword may hold either `null`
+or a value of the declared type. A non-nullable variable must not be initialized
+with `null`, and no conditional branch of its initializer may produce `null`.
 
 ### Documentation Evaluation
 
@@ -1226,6 +1217,14 @@ against the named schema before evaluation where possible, the fields are
 evaluated, and the final record is validated against the schema. Data mode may
 combine `schema_file` with `schema` so the named schema can come from the
 loaded schema file.
+
+Parse directives make host-provided runtime input available as typed variables
+inside the output block. `parse = Schema` validates the host input record
+against the locally declared schema named `Schema` and exposes each matching
+schema field as a variable. `parse_file = "path"` loads schema declarations
+from the referenced Mace file, then validates the host input against the schema
+named by an accompanying `schema = Name` directive, and exposes the matching
+fields as variables. `parse` and `parse_file` cannot be combined.
 
 ### Schema Output Evaluation
 
@@ -1420,9 +1419,10 @@ declaration cannot be validated, a variable cannot be evaluated, or an output
 field cannot be evaluated, Mace returns an error rather than a partial
 successful result.
 
-Missing injectable values error when referenced. An injectable without an
-initializer can exist in the script if it is unused, but referencing it without
-providing a runtime value fails evaluation.
+Parse input validation errors when the host input does not satisfy the
+referenced schema. A missing required field, an unknown field, or a type
+mismatch in the input record fails evaluation before any output field is
+evaluated.
 
 Schema validation errors are evaluation errors for schema-directed data. If
 the output record or a schema-backed variable misses a required field, contains
@@ -1440,9 +1440,9 @@ fields and an empty schema result.
 Schema output returns a schema result. The result contains structured schema
 field metadata and an empty data record.
 
-The document result depends only on the source text, imports, and explicit
-injected values. With the same inputs, evaluation produces the same result or
-the same error.
+The document result depends only on the source text, imports, and runtime parse
+input. With the same inputs, evaluation produces the same result or the same
+error.
 
 ## Validation Semantics
 
@@ -1452,8 +1452,8 @@ types, expressions, documentation metadata, and output block all satisfy the
 language rules.
 
 Validation is deterministic. Given the same source text, imported files, and
-injected values, validation must produce the same success result, diagnostics,
-and output model.
+runtime parse input, validation must produce the same success result,
+diagnostics, and output model.
 
 The processor validates the following categories:
 
@@ -1491,13 +1491,13 @@ All named declarations in the same scope must have unique names. A declaration
 **MAY** refer only to primitive types, named declarations, or imported symbols that
 are visible at the point of validation.
 
-Variables are immutable and must declare an explicit type. A non-injectable
-variable must have an initializer expression. The initializer expression must
-be assignable to the declared type.
+Variables are immutable and must declare an explicit type. A variable must have
+an initializer expression. The initializer expression must be assignable to the
+declared type.
 
-Injectable variables **MAY** omit an initializer, but any injectable variable used
-during output construction must have a runtime-provided value before output
-emission.
+A variable prefixed with `nullable` may be initialized to `null`. A
+non-nullable variable must not be assigned `null` directly or through a
+conditional branch whose null side may be taken.
 
 #[## Import Validation](#mace-language-specification)
 
@@ -1709,8 +1709,6 @@ The symbol table includes:
     
 - local variable declarations
     
-- local injectable declarations
-    
 
 Output fields are not all available at once. During output evaluation, fields become available on `$self` only after each field has been evaluated.
 
@@ -1809,7 +1807,7 @@ Script declarations are evaluated after static checks and type checks succeed.
 
 Variables are immutable. Once evaluated, their values do not change.
 
-Injectable variables receive their values from the host environment or from implementation-defined injection mechanisms. If an injectable declaration has no initializer and no value is supplied by the host environment, processing fails with an injection error.
+Parse directives deliver runtime input to the output block. When `parse = Schema` is present, the host-provided input record is validated against the named schema and each schema field is introduced as a variable into the output scope. When `parse_file = "path"` is used together with `schema = Name`, schema declarations are loaded from the referenced file and the same input validation and variable introduction applies. If the input does not satisfy the schema, processing fails with a validation error.
 
 Documentation declarations are metadata only and do not affect evaluation.
 
@@ -2201,7 +2199,7 @@ expected variable name
 
 <Aside type="note" title="`mace.syntax.variable-missing-initializer-equals`">
 
-Reported when a non-injectable variable declaration is missing `=`.
+Reported when a variable declaration is missing `=`.
 
 ```txt
 expected '=' in variable declaration
@@ -2687,9 +2685,19 @@ unexpected token '<token>'; expected <syntax>
 </Aside>
 
 The parser and analyzer currently classify parser failures into categories such as malformed imports, malformed directive lists, malformed choice types, malformed schemas, malformed variable declarations, malformed output fields, invalid array access indexes, and unexpected tokens. Lexer failures currently fall back to `mace.syntax.unexpected-token`.
+
+<Aside type="note" title="`mace.type.invalid-null-usage`">
+
+Reported when `null` is used in a context that does not permit it: a non-nullable variable initializer, a conditional branch producing `null` for a non-nullable target, or a direct `null` output field value.
+
+```txt
+null can only be assigned to nullable variables and optional schema fields
+```
+</Aside>
+
 ## Security Considerations
 
-Mace is a deterministic configuration language, not a general-purpose execution environment. A Mace implementation parses source text, resolves imports, validates declarations and output, evaluates pure expressions, and emits structured record data. It must not treat Mace files, imported files, injected values, strings, documentation, or emitted output as executable host-language code. The current language model supports deterministic record production, import resolution, validation, pure expression evaluation, and JSON-oriented CLI emission.
+Mace is a deterministic configuration language, not a general-purpose execution environment. A Mace implementation parses source text, resolves imports, validates declarations and output, evaluates pure expressions, and emits structured record data. It must not treat Mace files, imported files, parse input values, strings, documentation, or emitted output as executable host-language code. The current language model supports deterministic record production, import resolution, validation, pure expression evaluation, and JSON-oriented CLI emission.
 
 ### Import Path Safety
 
@@ -2823,13 +2831,11 @@ Specifically, Mace evaluation must not:
 
 String interpolation must stay inside the Mace expression evaluator. The expression inside `$(...)` is parsed as a normal Mace expression and must resolve to a runtime value. Type references are not valid interpolation expressions.
 
-### Injection Boundaries
+### Parse Input Boundaries
 
-`injectable` marks a variable whose value is supplied by the processor or CLI at runtime. The processor and CLI are responsible for ensuring that injectable values are provided.
+Runtime input provided through `parse = <Schema>` or `parse_file` forms a trust boundary because it comes from outside the source file. It must be treated as data only.
 
-Injected values form a trust boundary because they come from outside the source file. They must be treated as data only.
-
-An injected value must not be allowed to:
+Parse input must not be allowed to:
 
 - create declarations;
     
@@ -2850,11 +2856,9 @@ An injected value must not be allowed to:
 - alter import resolution behavior.
     
 
-Before evaluation continues, an injected value must be checked against the declared Mace type of the injectable variable.
+Before output evaluation continues, the parse input record must be validated against the declared schema. A field value that looks like a path, expression, or command remains a plain data string.
 
-The injected value for `env` is a string value. Even if the provided value looks like a path, import, directive, expression, or command, it remains a string.
-
-For example, this injected value is still only data:
+For example, this input value is still only data:
 
 ```txt
 ../../secret.mace
@@ -2909,8 +2913,8 @@ import.invalid_extension
 import.symbol_not_exported
 schema_file.path_outside_root
 schema_file.not_found
-injectable.missing_value
-injectable.type_mismatch
+parse.missing_required_field
+parse.type_mismatch
 ```
 
 Security diagnostics should explain what was rejected and why. For path boundary errors, diagnostics should include the requested path, the resolved canonical path when safe to reveal, and the configured project root.
@@ -2943,8 +2947,8 @@ A conforming Mace implementation should enforce the following security rules:
     
 - documentation is metadata only;
     
-- injected values are data only;
+- parse input values are data only;
     
-- injected values must be type checked before use;
+- parse input values must be schema-validated before use;
     
 - output serialization must not execute or reinterpret values.
