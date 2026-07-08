@@ -13,6 +13,7 @@ export const maceLanguage = {
 		{ include: '#inlineDescription' },
 		{ include: '#declarations' },
 		{ include: '#selfReference' },
+		{ include: '#parsedVariableReference' },
 		{ include: '#fieldNames' },
 		{ include: '#keywords' },
 		{ include: '#constants' },
@@ -84,13 +85,13 @@ export const maceLanguage = {
 		declarations: {
 			patterns: [
 				{
-					match: '\\b(from|import|type|schema|gen_doc|schema_doc|enum|nullable|parse|parse_file|null)\\b',
+					match: '\\b(from|import|type|schema|gen_doc|schema_doc|nullable|parse|parse_file|null)\\b',
 					captures: {
 						1: { name: 'keyword.control.mace' },
 					},
 				},
 				{
-					match: '\\b(type|schema|enum|gen_doc|schema_doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
+					match: '\\b(type|schema|gen_doc|schema_doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
 					captures: {
 						1: { name: 'keyword.declaration.mace' },
 						2: { name: 'entity.name.type.mace' },
@@ -106,7 +107,19 @@ export const maceLanguage = {
 		},
 		selfReference: {
 			name: 'variable.language.mace',
-			match: '\\$self\\b',
+			match: '\\$(self)\\b',
+			captures: {
+				0: { name: 'punctuation.special.mace' },
+				1: { name: 'variable.language.mace' },
+			},
+		},
+		parsedVariableReference: {
+			name: 'variable.other.mace',
+			match: '\\$([A-Za-z][A-Za-z0-9_]*)\\b',
+			captures: {
+				0: { name: 'punctuation.special.mace' },
+				1: { name: 'variable.other.mace' },
+			},
 		},
 		fieldNames: {
 			patterns: [
@@ -118,15 +131,11 @@ export const maceLanguage = {
 					name: 'entity.name.type.mace',
 					match: '(?<=\\bschema\\s*=\\s*)[A-Za-z][A-Za-z0-9_]*\\b',
 				},
-				{
-					name: 'variable.other.enummember.mace',
-					match: '(?<=\\.)[A-Za-z][A-Za-z0-9_]*\\b',
-				},
 			],
 		},
 		keywords: {
 			name: 'keyword.control.mace',
-			match: '\\b(output|schema_file|summary|description|props|array|union|variant)\\b',
+			match: '\\b(output|schema_file|summary|description|props|array|fusion|variant)\\b',
 		},
 		constants: {
 			patterns: [

@@ -195,33 +195,38 @@ Data mode with schema validation against a named schema.
 
 ### `output = data, schema_file = "<path>"`
 
-Data mode with schema validation loaded from another Mace file.
+Data mode with schema validation loaded from another Mace file. The path may be
+relative or an `http://` or `https://` URL.
 
 ### `output = data, parse = <Schema>`
 
-Validates the host-provided runtime input record against the named schema, then
-exposes each schema field as a variable inside the output block.
+Validates the host-provided runtime input record against the named schema before
+output evaluation. Parsed schema fields are exposed as `$`-prefixed variables,
+so a field like `env` is accessed as `$env`, and nested access continues without
+adding another `$` (for example `$profile.name`).
 
 ```mace
 |===|
-schema Runtime: { env: string; };
+schema Runtime: { env: string; profile: { name: string; }; };
 |===|
 [output = data, parse = Runtime]
 {
-  env: env,
+  env: $env,
+  name: $profile.name,
 }
 ```
 
 ### `output = data, parse_file = "<path>"`
 
-Loads schema declarations from the referenced Mace file, validates the
-host-provided runtime input record against those declarations, and exposes
-the matching fields as variables inside the output block.
+Loads schema declarations from the referenced Mace file and validates the
+host-provided runtime input record against those declarations. Parsed fields are
+also exposed as `$`-prefixed variables. The path may be relative or an
+`http://` or `https://` URL.
 
 ```mace
 [output = data, parse_file = "./runtime.mace"]
 {
-  env: env,
+  env: $env,
 }
 ```
 
@@ -258,15 +263,15 @@ array<User>
 array<array<int>>
 ```
 
-### Unions
+### Fusions
 
-Unions use `union[T1, T2, ...]` syntax and represent schema composition.
+Fusions use `fusion[T1, T2, ...]` syntax and represent schema composition.
 
 ```mace
-type User: union[Profile, Audit];
+type User: fusion[Profile, Audit];
 ```
 
-Schema unions combine member fields into one closed record shape.
+Schema fusions combine member fields into one closed record shape.
 
 ### Variants
 
@@ -275,10 +280,12 @@ Variants use `variant[T1, T2, ...]` syntax and represent closed alternatives.
 ```mace
 type Scalar: variant[string, int];
 type Input: variant[choice["dev", "prod"], int];
+type Payload: variant[array<string>, array<int>];
 ```
 
-Choice members remain literal alternatives inside variants, and tooling may
-surface those literal values directly in completions.
+Choice members remain literal alternatives inside variants, arrays can be
+closed alternatives by element type, and tooling may surface literal choice
+values directly in completions.
 
 ## The script block
 
@@ -357,7 +364,8 @@ Status current = 20;
 
 Choice aliases are named types, so they can be used anywhere a named
 non-schema type is allowed, including variables, schema fields,
-schema-mode output fields, imports, and `variant[...]` members.
+schema-mode output fields, imports, and `variant[...]` members. Array types may
+also appear directly in `variant[...]` members.
 
 ### Imports
 

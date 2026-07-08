@@ -43,6 +43,9 @@ schema User: {
 }
 ```
 
+`schema_file` also accepts `http://` and `https://` URLs when the schema is
+hosted remotely.
+
 ## Related docs
 
 - [Language Reference](/reference/language/)
