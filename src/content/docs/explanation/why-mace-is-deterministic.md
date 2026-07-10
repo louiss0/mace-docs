@@ -32,5 +32,5 @@ text construction as general-purpose string programming.
 
 ## Related docs
 
-- [Language Reference](/reference/language/)
+- [Motivation](/reference/motivation/)
 - [First Mace File](/tutorials/first-mace-file/)

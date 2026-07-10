@@ -48,6 +48,6 @@ hosted remotely.
 
 ## Related docs
 
-- [Language Reference](/reference/language/)
-- [Documentation Syntax](/reference/documentation-syntax/)
+- [Schemas](/reference/schemas/)
+- [Docs](/reference/docs/)
 - [Script Blocks and Output Blocks](/explanation/script-blocks-and-output-blocks/)

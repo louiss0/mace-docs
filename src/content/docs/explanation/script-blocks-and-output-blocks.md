@@ -37,5 +37,5 @@ questions quickly:
 
 ## Related docs
 
-- [Language Reference](/reference/language/)
+- [Block Overview](/reference/block-overview/)
 - [How to Validate Output with a Schema](/how-to/validate-output-with-a-schema/)

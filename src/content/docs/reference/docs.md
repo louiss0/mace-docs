@@ -1,6 +1,8 @@
 ---
-title: Documentation Syntax
+title: Docs
 description: How to document Mace code using inline descriptions, doc blocks, gen_doc, and schema_doc.
+sidebar:
+  order: 13
 ---
 
 Mace provides four documentation forms. All four are metadata only and never
@@ -146,5 +148,6 @@ Comments are discarded during parsing, while documentation forms are preserved.
 
 ## Related docs
 
-- [Language Reference](/reference/language/)
+- [Schemas](/reference/schemas/)
+- [Type Aliases](/reference/type-aliases/)
 - [How to Validate Output with a Schema](/how-to/validate-output-with-a-schema/)
