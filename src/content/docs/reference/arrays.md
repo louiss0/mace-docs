@@ -1,6 +1,6 @@
 ---
 title: Arrays
-description: Array types, array literals, and array access in Mace.
+description: Array types and array literals in Mace.
 sidebar:
   order: 9
 ---
@@ -22,29 +22,6 @@ array<array<int>>
 ```mace
 ["config", "demo"]
 [1, 2, 3]
-```
-
-## Array access
-
-Arrays use zero-based indexing with an integer literal.
-
-```mace
-{
-  names: ["Ada", "Linus", "Grace"],
-  first_name: $self.names[0]
-}
-```
-
-Array access can be chained for nested arrays.
-
-```mace
-|===|
-array<array<array<int>>> matrix = [[[1]]];
-|===|
-[output = data]
-{
-  value: matrix[0][0][0]
-}
 ```
 
 ## Array merge

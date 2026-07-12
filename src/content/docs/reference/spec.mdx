@@ -287,7 +287,7 @@ Mace uses:
 
 - `|===|` for script block delimiters
 - `{` and `}` for records, schemas, and output blocks
-- `[` and `]` for directive lists, array literals, array access, and type lists
+- `[` and `]` for directive lists, array literals, and type lists
 - `(` and `)` for grouping and interpolation expressions
 - `<` and `>` for parameterized array types
 - `:` for type annotations and field declarations
@@ -1289,7 +1289,7 @@ precedence binds more tightly.
 
 | Precedence | Operators                      | Associativity | Meaning                          |
 | ---------- | ------------------------------ | ------------- | -------------------------------- |
-| 15         | `.`, `[]`                      | left          | member access, array access      |
+| 15         | `.`                            | left          | member access                    |
 | 14         | `!`, `~`, unary `+`, unary `-` | right         | prefix operators                 |
 | 13         | `**`                           | right         | exponentiation                   |
 | 12         | `*`, `/`, `%`                  | left          | multiplication, division, modulo |
