@@ -268,7 +268,6 @@ Otherwise, the comment is a line comment and ends at the newline.
 Mace supports:
 
 - member access: `.`
-- array access: `[index]`
 - unary operators: `!`, `~`, unary `+`, unary `-`
 - arithmetic operators: `+`, `-`, `*`, `/`, `%`, `**`
 - shift operators: `<<`, `>>`, `>>>`
@@ -574,14 +573,10 @@ postfix_target
   | "(" , expression , ")" ;
 
 postfix_suffix
-  = member_access_suffix
-  | array_access_suffix ;
+  = member_access_suffix ;
 
 member_access_suffix
   = "." , identifier ;
-
-array_access_suffix
-  = "[" , ws0 , int_literal , ws0 , "]" ;
 
 self_reference
   = "$self" , "." , identifier , { "." , identifier } ;
@@ -1488,7 +1483,6 @@ The processor validates the following categories:
 - variant and fusion conformance;
 - valid `$self` references;
 - valid member access;
-- valid array access targets and indexes;
 - import failures and circular imports.
 
 Validation must reject a source text if any required declaration, type,
@@ -1773,10 +1767,6 @@ These checks include, but are not limited to:
 - invalid `$self` usage
     
 - invalid interpolation targets
-    
-- invalid array access targets
-    
-- out-of-range array indexes when statically known
     
 
 Directive validation includes checking that `output = schema` appears alone, and that `output = data` does not specify both `schema` and `schema_file`.
@@ -2527,24 +2517,6 @@ expected member name after '.'
 ```
 </Aside>
 
-<Aside type="note" title="`mace.syntax.invalid-array-access-index`">
-
-Reported when array access does not use an integer index.
-
-```txt
-expected integer index in array access
-```
-</Aside>
-
-<Aside type="note" title="`mace.syntax.array-access-missing-closing-bracket`">
-
-Reported when array access is missing `]`.
-
-```txt
-expected ']' after array access index
-```
-</Aside>
-
 <Aside type="note" title="`mace.syntax.conditional-missing-colon`">
 
 Reported when a conditional expression is missing `:`.
@@ -2695,7 +2667,7 @@ unexpected token '<token>'; expected <syntax>
 ```
 </Aside>
 
-The parser and analyzer currently classify parser failures into categories such as malformed imports, malformed directive lists, malformed choice types, malformed schemas, malformed variable declarations, malformed output fields, invalid array access indexes, and unexpected tokens. Lexer failures currently fall back to `mace.syntax.unexpected-token`.
+The parser and analyzer currently classify parser failures into categories such as malformed imports, malformed directive lists, malformed choice types, malformed schemas, malformed variable declarations, malformed output fields, and unexpected tokens. Lexer failures currently fall back to `mace.syntax.unexpected-token`.
 
 <Aside type="note" title="`mace.type.invalid-null-usage`">
 
@@ -2817,7 +2789,7 @@ A schema file **MAY** affect validation, but it must not introduce arbitrary exe
 
 ### No Arbitrary Code Execution
 
-Mace expressions are pure and deterministic. The implementation supports identifiers, member access, array access, literals, array literals, record literals, `$self`, unary operators, arithmetic operators, comparison operators, equality operators, bitwise operators, logical operators, and ternary conditionals.
+Mace expressions are pure and deterministic. The implementation supports identifiers, member access, literals, array literals, record literals, `$self`, unary operators, arithmetic operators, comparison operators, equality operators, bitwise operators, logical operators, and ternary conditionals.
 
 A Mace implementation must not provide expression features that execute arbitrary host behavior.
 

@@ -50,7 +50,7 @@ Array tests compare their resolved element types:
 
 ```mace
 variant[array<string>, string] value = ["first"];
-string first = value is array<string> ? value[0] : value;
+boolean hasStringItems = value is array<string>;
 ```
 
 Transparent aliases and choices can also be used as targets.
