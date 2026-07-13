@@ -45,6 +45,7 @@ Types appear in:
 - type aliases
 - schema-mode output blocks
 - validation rules for records and arrays
+- `is` type tests that narrow variants in conditional branches
 
 ## Read next
 
@@ -54,3 +55,4 @@ Types appear in:
 - [Arrays](/reference/arrays/)
 - [Type Aliases](/reference/type-aliases/)
 - [Schemas](/reference/schemas/)
+- [Type Narrowing](/reference/type-narrowing/)
