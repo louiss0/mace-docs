@@ -208,12 +208,12 @@ keywords by the grammar.
 
 The reserved keywords are:
 
-`from`, `import`, `type`, `schema`, `choice`, `string`, `int`,
-`float`, `boolean`, `array`, `fusion`, `variant`, `nullable`, `parse`,
-`parse_file`, `null`, `gen_doc`, `schema_doc`, `true`, `false`, and `in`.
+`from`, `import`, `type`, `schema`, `choice`, `string`, `int`, `float`,
+`boolean`, `array`, `fusion`, `variant`, `nullable`, `null`, `gen_doc`,
+`schema_doc`, `true`, `false`, and `in`.
 
-Directive words such as `output`, `data`, and `schema_file` are interpreted
-inside directive lists.
+`output`, `data`, `parse`, `parse_file`, and `schema_file` are contextual
+directive words and remain valid identifiers everywhere else.
 
 Keywords are case-sensitive.
 
@@ -376,11 +376,11 @@ output_directive
     ws0 , "]" ;
 
 directive_pair
-  = "output" , ws0 , "=" , ws0 , ( "data" | "schema" )
-  | "schema_file" , ws0 , "=" , ws0 , string_literal
+  = "output" , ws0 , "=" , ws0 , ( '"data"' | '"schema"' )
+  | "schema_file" , ws0 , "=" , ws0 , path_literal
   | "schema" , ws0 , "=" , ws0 , identifier
   | "parse" , ws0 , "=" , ws0 , identifier
-  | "parse_file" , ws0 , "=" , ws0 , string_literal ;
+  | "parse_file" , ws0 , "=" , ws0 , path_literal ;
 
 inline_doc_block
   = block_string ;
@@ -483,7 +483,7 @@ variable_declaration
 
 ```ebnf
 import_declaration
-  = "from" , ws1 , string_literal , ws1 ,
+  = "from" , ws1 , path_literal , ws1 ,
     "import" , ws1 , import_list ,
     ws0 , ";" ;
 
