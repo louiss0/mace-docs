@@ -376,7 +376,8 @@ output_directive
     ws0 , "]" ;
 
 directive_pair
-  = "output" , ws0 , "=" , ws0 , ( '"data"' | '"schema"' )
+  = "output" , ws0 , "=" , ws0 , ( "'data'" | "'schema'" )
+  (* All directive string values use static single-quoted strings. *)
   | "schema_file" , ws0 , "=" , ws0 , path_literal
   | "schema" , ws0 , "=" , ws0 , identifier
   | "parse" , ws0 , "=" , ws0 , identifier
@@ -485,6 +486,8 @@ variable_declaration
 import_declaration
   = "from" , ws1 , path_literal , ws1 ,
     "import" , ws1 , import_list ,
+
+  (* path_literal is a static single-quoted string. *)
     ws0 , ";" ;
 
   import_list
