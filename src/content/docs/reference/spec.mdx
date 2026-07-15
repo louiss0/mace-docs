@@ -565,7 +565,8 @@ primary_expression
   | string_literal
   | boolean_literal
   | array_literal
-  | record_literal ;
+  | record_literal
+  | match_expression ;
 
 postfix_expression
   = postfix_target , { postfix_suffix } ;
@@ -648,8 +649,18 @@ logical_or_expression
 conditional_expression
   = logical_or_expression
   | logical_or_expression , ws0 , "?" , ws0 ,
-    expression , ws0 , ":" , ws0 ,
-    conditional_expression ;
+    logical_or_expression , ws0 , ":" , ws0 ,
+    logical_or_expression ;
+
+match_expression
+  = "match" , ws0 , "(" , ws0 , expression , ws0 , ")" , ws0 ,
+    "{" , ws0 , match_arm , { ws0 , match_arm } , ws0 , "}" ;
+
+match_arm
+  = match_pattern , ws0 , "=>" , ws0 , expression , ws0 , "," ;
+
+match_pattern
+  = type_reference | choice_member ;
 
 merge_expression
   = (array_literal | record_literal) ,
@@ -1301,7 +1312,7 @@ precedence binds more tightly.
 | 4          | `\|`                           | left          | bitwise or                       |
 | 3          | `&&`                           | left          | logical and                      |
 | 2          | `\|\|`                         | left          | logical or                       |
-| 1          | `? :`                          | right         | conditional expression           |
+| 1          | `? :`                          | none          | conditional expression           |
 
 Prefix operators bind more tightly than exponentiation. This means `-2 ** 2`
 groups as `(-2) ** 2`.
@@ -1309,8 +1320,9 @@ groups as `(-2) ** 2`.
 Exponentiation is right-associative. This means `2 ** 3 ** 2` groups as
 `2 ** (3 ** 2)`.
 
-The conditional operator is right-associative. Nested conditionals group toward
-the `else` branch unless parentheses choose another grouping.
+Conditional expressions allow exactly one conditional operator. A condition or
+branch cannot contain another conditional expression, including one wrapped in
+parentheses.
 
 ### Arithmetic Evaluation
 
@@ -1372,6 +1384,23 @@ without evaluating the right operand.
 Conditional expressions evaluate the condition first. The condition must be
 `boolean`. If the condition is `true`, only the `then` branch is evaluated. If
 the condition is `false`, only the `else` branch is evaluated.
+
+## Match Evaluation
+
+A match expression evaluates its input once. The input must resolve to a
+`variant[...]` or `choice[...]` type. Variant arms use type references, while
+choice arms use the exact literal members of the choice. A variant pattern may
+cover one or more resolved source members, but pattern member sets cannot
+overlap.
+
+Every member of the input domain must be covered exactly once. There is no
+default arm, and missing, duplicate, unknown, overlapping, or incompatible
+patterns are errors. A pattern does not create a binding or extract the matched
+value. A stable matched variable or member path is narrowed to the arm pattern
+while that arm is checked. Only the selected arm is evaluated.
+
+All arm results must have compatible types. Equal result types remain concrete;
+distinct compatible result types form a deduplicated `variant[...]`.
 
 ## Structural Merge Evaluation
 
@@ -2792,7 +2821,7 @@ A schema file **MAY** affect validation, but it must not introduce arbitrary exe
 
 ### No Arbitrary Code Execution
 
-Mace expressions are pure and deterministic. The implementation supports identifiers, member access, literals, array literals, record literals, `$self`, unary operators, arithmetic operators, comparison operators, equality operators, bitwise operators, logical operators, and ternary conditionals.
+Mace expressions are pure and deterministic. The implementation supports identifiers, member access, literals, array literals, record literals, `$self`, unary operators, arithmetic operators, comparison operators, equality operators, bitwise operators, logical operators, single-level ternary conditionals, and exhaustive match expressions.
 
 A Mace implementation must not provide expression features that execute arbitrary host behavior.
 

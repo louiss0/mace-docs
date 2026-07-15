@@ -45,7 +45,7 @@ Types appear in:
 - type aliases
 - schema-mode output blocks
 - validation rules for records and arrays
-- `is` type tests that narrow variants in conditional branches
+- exhaustive `match` expressions for variants and choices
 
 ## Read next
 
