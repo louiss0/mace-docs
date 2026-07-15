@@ -20,7 +20,7 @@ description to a declaration or field.
 
 Allowed on:
 
-- `type` declarations
+- `alias` declarations
 - choice members inside `choice[...]`
 - schema fields
 - output fields
@@ -32,8 +32,8 @@ Not allowed on:
 
 ```mace
 |===|
-type Name: string /# A user display name;
-type Status: choice["Pending", "Running"] /# Runtime status values;
+alias Name: string /# A user display name;
+alias Status: choice["Pending", "Running"] /# Runtime status values;
 
 schema User: {
   name: string /# The user's display name,
@@ -66,7 +66,7 @@ This block emits user data.
 
 ## Documentation declarations
 
-`gen_doc` attaches structured metadata to a named `type` or non-object variable.
+`gen_doc` attaches structured metadata to a named `alias` or non-object variable.
 `schema_doc` attaches structured metadata to a named `schema` or object-valued variable.
 
 ```mace
@@ -90,7 +90,7 @@ A reusable schema that models application users.
 ```
 
 ```mace
-type Name: string;
+alias Name: string;
 string greeting = "Hello";
 
 gen_doc Name {
@@ -103,7 +103,7 @@ gen_doc greeting {
 ```
 
 ```mace
-type Status: choice["Pending", "Running"];
+alias Status: choice["Pending", "Running"];
 
 gen_doc Status {
   summary: "Runtime status.",
@@ -123,7 +123,7 @@ schema_doc profile {
 
 Rules:
 
-- `gen_doc` must appear after the target `type` or non-object variable declaration
+- `gen_doc` must appear after the target `alias` or non-object variable declaration
 - `schema_doc` must appear after the target `schema` or object-valued variable declaration
 - each target may have at most one documentation declaration
 - `gen_doc` supports `summary` and `description`
@@ -137,7 +137,7 @@ Rules:
 
 The same declaration must not be documented by more than one form.
 
-- a `type` with a `gen_doc` declaration must not also have an inline `/#`
+- an `alias` with a `gen_doc` declaration must not also have an inline `/#`
 - a schema field documented through `schema_doc ... props` must not also have
   an inline `/#` description
 

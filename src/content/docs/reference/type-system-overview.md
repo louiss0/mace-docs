@@ -32,8 +32,8 @@ Mace also supports:
 You can give a type a reusable name with a type alias.
 
 ```mace
-type Name: string;
-type Tags: array<string>;
+alias Name: string;
+alias Tags: array<string>;
 ```
 
 ## Where types are used

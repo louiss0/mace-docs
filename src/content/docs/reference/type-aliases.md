@@ -10,9 +10,9 @@ Type aliases give a reusable name to a type.
 ## Basic aliases
 
 ```mace
-type Name: string;
-type Scores: array<int>;
-type Alias: Name;
+alias Name: string;
+alias Scores: array<int>;
+alias Alias: Name;
 ```
 
 ## Choice aliases
@@ -20,14 +20,14 @@ type Alias: Name;
 Choices define finite literal domains.
 
 ```mace
-type Fruit: choice["apple", "strawberry", "pecan"];
+alias Fruit: choice["apple", "strawberry", "pecan"];
 ```
 
 Choice aliases can compose other choice aliases.
 
 ```mace
-type BaseEnv: choice["dev", "prod"];
-type ExtendedEnv: choice[BaseEnv, "preview", true];
+alias BaseEnv: choice["dev", "prod"];
+alias ExtendedEnv: choice[BaseEnv, "preview", true];
 ```
 
 ## Fusion aliases
@@ -35,7 +35,7 @@ type ExtendedEnv: choice[BaseEnv, "preview", true];
 Fusions compose schema shapes.
 
 ```mace
-type User: fusion[Profile, Audit];
+alias User: fusion[Profile, Audit];
 ```
 
 ## Variant aliases
@@ -43,8 +43,8 @@ type User: fusion[Profile, Audit];
 Variants define closed alternatives.
 
 ```mace
-type Scalar: variant[string, int];
-type Payload: variant[array<string>, array<int>];
+alias Scalar: variant[string, int];
+alias Payload: variant[array<string>, array<int>];
 ```
 
 ## Read next

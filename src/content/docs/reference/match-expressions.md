@@ -43,7 +43,7 @@ must not overlap, and together with any concrete arms they must cover the whole
 source variant:
 
 ```mace
-type TextOrNumber: variant[string, int];
+alias TextOrNumber: variant[string, int];
 variant[string, int, boolean] value = 7;
 
 string kind = match (value) {
@@ -62,7 +62,7 @@ schema's fields through the original variable.
 Choice arms use the exact literal members of the choice:
 
 ```mace
-type Environment: choice["dev", "prod"];
+alias Environment: choice["dev", "prod"];
 Environment environment = "prod";
 
 int workers = match (environment) {

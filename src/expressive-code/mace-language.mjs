@@ -85,13 +85,13 @@ export const maceLanguage = {
 		declarations: {
 			patterns: [
 				{
-					match: '\\b(from|import|type|schema|gen_doc|schema_doc|nullable|parse|parse_file|null)\\b',
+					match: '\\b(from|import|alias|schema|gen_doc|schema_doc|nullable|parse|parse_file|null)\\b',
 					captures: {
 						1: { name: 'keyword.control.mace' },
 					},
 				},
 				{
-					match: '\\b(type|schema|gen_doc|schema_doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
+					match: '\\b(alias|schema|gen_doc|schema_doc)\\s+([A-Za-z][A-Za-z0-9_]*)',
 					captures: {
 						1: { name: 'keyword.declaration.mace' },
 						2: { name: 'entity.name.type.mace' },

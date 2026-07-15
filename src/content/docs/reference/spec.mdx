@@ -208,7 +208,7 @@ keywords by the grammar.
 
 The reserved keywords are:
 
-`from`, `import`, `type`, `schema`, `choice`, `string`, `int`, `float`,
+`from`, `import`, `alias`, `schema`, `choice`, `string`, `int`, `float`,
 `boolean`, `array`, `fusion`, `variant`, `nullable`, `null`, `gen_doc`,
 `schema_doc`, `true`, `false`, and `in`.
 
@@ -399,7 +399,7 @@ output_block
 
 ```ebnf
 type_declaration
-  = "type" , ws1 ,
+  = "alias" , ws1 ,
     identifier , ws0 ,
     ":" , ws0 ,
     type_reference ,
