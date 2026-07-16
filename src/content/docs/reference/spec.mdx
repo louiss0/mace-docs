@@ -276,7 +276,6 @@ Mace supports:
 - bitwise operators: `&`, `|`, `^`
 - logical operators: `&&`, `||`
 - conditional operator: `? :`
-- structural merge `<>`
 
 Operator precedence is defined by the expression grammar.
 
@@ -662,10 +661,6 @@ match_arm
 match_pattern
   = type_reference | choice_member ;
 
-merge_expression
-  = (array_literal | record_literal) ,
-    { ws0 , "<>" , ws0 , (array_literal | record_literal) } ,
-    ws0 ;
 ```
 </Aside>
 
@@ -802,10 +797,9 @@ ws1
 ## Static Semantics
 
 Mace record structures craft smaller records toward a larger record. A record  
-literal creates a record, a nested record literal creates a nested record, an  
-array collects values in order, and `<>` merges records or arrays into a larger  
-value. Static semantics determine whether the resulting construction is legal  
-before the value is accepted as Mace data.
+literal creates a record, a nested record literal creates a nested record, and  
+array collects values in order. Static semantics determine whether the resulting  
+construction is legal before the value is accepted as Mace data.
 
 Static semantics define whether source text is well-formed. These rules reject:
 
@@ -971,39 +965,6 @@ If an optional field is present, its value must still satisfy the field type.
 Schemas compose by reference. A schema field may reference another schema,  
 allowing nested record structures to be validated recursively.
 
-
-### Structural Merge
-
-The `<>` operator performs structural merge.
-
-Its operands are syntactically limited to:
-
-- identifiers,
-    
-- record literals,
-    
-- array literals,
-    
-- or nested merge expressions.
-    
-
-This restriction keeps structural merge focused on record and array composition  
-rather than scalar expression evaluation.
-
-Record merge is deep.
-
-Fields appearing on only one side are copied directly. Mutual record fields are  
-merged recursively. Arrays concatenate. Shared scalar fields use  
-the right-hand value.
-
-Array merge concatenates arrays.
-
-Direct array merge operands must have compatible element types. Arrays and  
-records cannot be merged together directly.
-
-Structural merge does not weaken schema validation. A merged record assigned to  
-a schema or validated through `schema = Name` must still satisfy the final  
-schema after merge completion.
 
 
 ### Assignability
@@ -1306,7 +1267,6 @@ precedence binds more tightly.
 | 10         | `<<`, `>>`, `>>>`              | left          | shifts                           |
 | 9          | `<`, `<=`, `>`, `>=`           | left          | relational comparison            |
 | 8          | `==`, `!=`                     | left          | equality comparison              |
-| 7          | `<>`                           | left          | structural merge                 |
 | 6          | `&`                            | left          | bitwise and                      |
 | 5          | `^`                            | left          | bitwise xor                      |
 | 4          | `\|`                           | left          | bitwise or                       |
@@ -1401,24 +1361,6 @@ while that arm is checked. Only the selected arm is evaluated.
 
 All arm results must have compatible types. Equal result types remain concrete;
 distinct compatible result types form a deduplicated `variant[...]`.
-
-## Structural Merge Evaluation
-
-The `<>` operator evaluates both operands and then merges them. Direct merge
-operands must be records or arrays of compatible merge kind.
-
-Record merge is deep. Fields that appear only on one side are copied. If both
-sides contain a record under the same field, those records merge recursively.
-If both sides contain arrays under the same field, the arrays concatenate. If
-both sides contain scalar values, or values of different mergeable kinds, the
-right-hand value replaces the left-hand value.
-
-Array merge concatenates arrays from left to right. Direct array operands must
-have compatible element types when their element types are known.
-
-Merge does not bypass later schema validation. A merged record emitted under a
-schema directive must still satisfy that schema after the merge result is
-formed.
 
 ### String Interpolation Evaluation
 

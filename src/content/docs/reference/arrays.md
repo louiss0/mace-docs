@@ -24,9 +24,6 @@ array<array<int>>
 [1, 2, 3]
 ```
 
-## Array merge
-
-When `<>` is used on arrays, the arrays concatenate from left to right.
 
 ## Read next
 
