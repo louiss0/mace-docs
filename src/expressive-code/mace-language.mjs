@@ -159,8 +159,10 @@ export const maceLanguage = {
 			],
 		},
 		variableTypes: {
-			name: 'entity.name.type.mace',
-			match: '\\b[A-Za-z][A-Za-z0-9_]*\\b(?=\\s+[A-Za-z][A-Za-z0-9_]*\\s*=)',
+			match: '\\b([A-Za-z][A-Za-z0-9_]*)\\b\\s+[A-Za-z][A-Za-z0-9_]*\\b(?=\\s*=)',
+			captures: {
+				1: { name: 'storage.type.primitive.mace' },
+			},
 		},
 		numbers: {
 			patterns: [
