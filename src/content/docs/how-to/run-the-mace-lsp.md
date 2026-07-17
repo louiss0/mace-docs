@@ -23,6 +23,7 @@ The current server supports:
 - definitions
 - document symbols
 - code actions
+- reanalysis when watched `.mace` files change
 - canonical whole-document formatting, equivalent to `mace output`
 
 ## Related docs
