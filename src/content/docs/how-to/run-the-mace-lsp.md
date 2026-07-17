@@ -23,7 +23,7 @@ The current server supports:
 - definitions
 - document symbols
 - code actions
-- formatting
+- canonical whole-document formatting, equivalent to `mace output`
 
 ## Related docs
 
