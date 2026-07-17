@@ -141,7 +141,11 @@ export const maceLanguage = {
 			patterns: [
 				{
 					name: 'storage.type.primitive.mace',
-					match: '\\b(string|int|float|boolean)\\b',
+					match: '\\b(string|boolean)\\b',
+				},
+				{
+					name: 'constant.numeric.mace',
+					match: '\\b(int|float|hex_int|hex_float)\\b',
 				},
 				{
 					name: 'constant.language.boolean.mace',
