@@ -24,7 +24,7 @@ The current server supports:
 - document symbols
 - code actions
 - reanalysis when watched `.mace` files change
-- canonical whole-document formatting, equivalent to `mace output`
+- fence-only formatting that preserves source text and resizes script fences to the widest enclosed line
 
 ## Related docs
 
