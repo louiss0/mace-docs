@@ -161,6 +161,14 @@ export const maceLanguage = {
 			patterns: [
 				{
 					name: 'constant.numeric.float.mace',
+					match: '\\b0[xX][0-9A-Fa-f]+\\.[0-9A-Fa-f]+\\b',
+				},
+				{
+					name: 'constant.numeric.integer.mace',
+					match: '\\b0[xX][0-9A-Fa-f]+\\b',
+				},
+				{
+					name: 'constant.numeric.float.mace',
 					match: '\\b\\d+\\.\\d+\\b',
 				},
 				{
