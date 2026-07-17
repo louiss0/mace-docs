@@ -17,6 +17,7 @@ export const maceLanguage = {
 		{ include: '#fieldNames' },
 		{ include: '#keywords' },
 		{ include: '#constants' },
+		{ include: '#variableTypes' },
 		{ include: '#numbers' },
 		{ include: '#operators' },
 	],
@@ -156,6 +157,10 @@ export const maceLanguage = {
 					match: '\\b(data|schema)\\b',
 				},
 			],
+		},
+		variableTypes: {
+			name: 'entity.name.type.mace',
+			match: '\\b[A-Za-z][A-Za-z0-9_]*\\b(?=\\s+[A-Za-z][A-Za-z0-9_]*\\s*=)',
 		},
 		numbers: {
 			patterns: [
