@@ -52,17 +52,7 @@ export default defineConfig({
 				{
 					label: 'Reference',
 					items: [
-						{ label: 'Variables', link: '/reference/variables/' },
-						{ label: 'String', link: '/reference/string/' },
-						{ label: 'Number', link: '/reference/number/' },
-						{ label: 'Boolean', link: '/reference/boolean/' },
-						{ label: 'Choice', link: '/reference/choice/' },
-						{ label: 'Variants', link: '/reference/variants/' },
-						{ label: 'Fusions', link: '/reference/fusions/' },
-						{ label: 'Arrays', link: '/reference/arrays/' },
-						{ label: 'Records', link: '/reference/records/' },
-						{ label: 'Schemas', link: '/reference/schemas/' },
-						{ label: 'Spec', link: '/reference/spec/' },
+						{ autogenerate: { directory: 'reference' } }
 					],
 				},
 				{
