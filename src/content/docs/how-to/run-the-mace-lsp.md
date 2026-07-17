@@ -27,5 +27,5 @@ The current server supports:
 
 ## Related docs
 
-- [CLI Reference](/reference/cli/)
+- [CLI Reference](/how-to/cli-reference/)
 - [First Mace File](/tutorials/first-mace-file/)

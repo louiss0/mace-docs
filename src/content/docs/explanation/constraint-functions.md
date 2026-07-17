@@ -260,5 +260,5 @@ Before implementation, the remaining decisions to lock down are:
 
 ## Related docs
 
-- [Type System Overview](/reference/type-system-overview/)
+- [Type System Overview](/tour/type-system-overview/)
 - [Why Mace Is Deterministic](/explanation/why-mace-is-deterministic/)

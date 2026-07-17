@@ -1,0 +1,85 @@
+---
+title: Motivation
+description: Why Mace is a typed, deterministic configuration language.
+sidebar:
+  order: 1
+---
+
+Mace is the **Main Application Configuration Engine**: a language for building
+configuration records that can be checked before an application consumes them.
+It keeps the convenience of a data format while adding names, reusable types,
+schemas, expressions, documentation, and editor tooling.
+
+## Configuration should fail early
+
+A growing configuration usually needs more than key-value syntax. Teams need to
+reuse values, constrain shapes, explain fields, and validate data arriving from
+CI or another process. When those rules live only in application code, an editor
+cannot help and a typo may survive until deployment.
+
+Mace puts the contract beside the data:
+
+```mace
+|===|
+schema Service: {
+  name: string,
+  replicas: int,
+};
+
+Service api = {
+  name: "accounts",
+  replicas: 3,
+};
+|===|
+
+[output = 'data', schema = Service]
+{
+  name: api.name,
+  replicas: api.replicas,
+}
+```
+
+The schema rejects missing fields, unknown fields, and incompatible values. The
+output block makes the file's public result obvious.
+
+## Configuration should stay data
+
+Mace expressions are pure. They cannot run shell commands, make network calls,
+write files, or invoke arbitrary host-language functions. Imports and schema
+files are resolved inside a project boundary, and external input must pass a
+schema before expressions can read it.
+
+This intentionally smaller execution model makes a Mace file safer to inspect,
+cache, review, and evaluate in tooling.
+
+## Predictability is a feature
+
+Given the same source, imported files, and runtime input, a conforming processor
+produces the same complete result or the same error. Mace supports that promise
+with strict rules:
+
+- variables are explicit, initialized, and immutable;
+- a file has one output record;
+- output fields evaluate from top to bottom;
+- schemas are closed, so misspelled fields are errors;
+- numeric families do not silently change representation;
+- ambiguous and empty collection types are not guessed;
+- processing is all-or-nothing, with no partial output after an error.
+
+Strictness is not there to make configuration ceremonial. It moves uncertainty
+from production into diagnostics and autocomplete.
+
+## Two planes, one file
+
+Mace separates the **schema plane** from the **record plane**. Types and schemas
+describe what is allowed; variables and record literals hold runtime values.
+The final output can publish either data or schema metadata, but never both at
+once.
+
+That separation lets one Mace file describe a reusable contract and another
+produce validated data for it without treating a type as a runtime value.
+
+## Next
+
+Continue to [Block Overview](/tour/block-overview/) to learn the shape of every
+Mace document.

@@ -1,0 +1,272 @@
+---
+title: Records
+description: Construct fixed and homogeneous records and follow Mace's strict member-access rules.
+sidebar:
+  order: 9
+---
+
+A record is a runtime collection of uniquely named fields. Mace supports closed
+record shapes for known fields and `record<T>` maps for open-ended field names
+whose values share one type.
+
+## Record literals
+
+A literal uses `name: value` fields separated by commas.
+
+```mace
+|===|
+alias Endpoint: {
+  host: string,
+  port: int,
+};
+
+Endpoint endpoint = {
+  host: "localhost",
+  port: 8080,
+};
+|===|
+
+{
+  endpoint: endpoint,
+}
+```
+
+Aliases can name inline record types, while schemas give reusable closed shapes
+their own declaration form. In both cases, required fields must exist, optional
+fields may be absent, unknown fields are rejected, and each present value must
+match its declared type.
+
+## Homogeneous record maps
+
+`record<T>` permits arbitrary identifier keys, but every value must conform to
+`T`.
+
+```mace
+|===|
+alias EnvironmentVariables: record<string>;
+EnvironmentVariables environment = {
+  LOG_LEVEL: "info",
+  REGION: "us-east",
+};
+|===|
+
+{
+  environment: environment,
+}
+```
+
+This differs from `{ LOG_LEVEL: string, REGION: string }`: an inline shape has a
+closed set of keys, while `record<string>` can contain any valid identifier key
+with a string value.
+
+An empty record map has no value evidence and therefore needs its declared
+`record<T>` type. An empty record in data output needs an output schema or other
+expected record shape.
+
+## Member access overview
+
+Mace has three related operators:
+
+| Syntax | Purpose |
+| --- | --- |
+| `target.member` | Read a known, required member from a definitely present record |
+| `target?.member` | Read an optional field or perform an optional record-map lookup |
+| `possibly_absent ?? fallback` | Convert an absent result into a concrete value |
+
+Member access follows the **declared record type**, not whichever fields happen
+to exist in the current initializer.
+
+## Required fields use `.`
+
+```mace
+|===|
+schema Service: {
+  name: string,
+  replicas: int,
+};
+
+Service service = {
+  name: "api",
+  replicas: 3,
+};
+
+string service_name = service.name;
+|===|
+
+{
+  name: service_name,
+}
+```
+
+`service.name` is safe because `service` is non-nullable and `name` is required.
+Plain access is invalid if the target may be null or the selected field may be
+absent.
+
+## Optional fields use `?.`
+
+```mace
+|===|
+schema Address: {
+  city?: string,
+};
+
+schema Profile: {
+  address?: Address,
+};
+
+schema User: {
+  profile?: Profile,
+};
+
+User user = {
+  profile: {
+    address: {},
+  },
+};
+
+string city = user?.profile?.address?.city ?? "unknown";
+|===|
+
+{
+  city: city,
+}
+```
+
+The first `?.` is required because `profile` is optional. Once a step can be
+absent, **every later step in that path also uses `?.`**, even when a later field
+is required in its own schema. This propagates possible absence instead of
+pretending the intermediate record exists.
+
+An optional chain does not produce a storable null value. It produces a
+possibly absent expression. Before assigning, interpolating, comparing, or
+emitting it, resolve it with `??`. Otherwise Mace reports:
+
+```text
+possibly absent expressions must be resolved with '??' before use
+```
+
+## Record-map lookups are optional
+
+Because `record<T>` does not guarantee any particular key, each lookup uses
+`?.` and must eventually be resolved.
+
+```mace
+|===|
+alias PackageGroups: record<record<string>>;
+PackageGroups packages = {
+  codefixer: {
+    api: "enabled",
+  },
+};
+
+string api_state = packages?.codefixer?.api ?? "missing";
+|===|
+
+{
+  api_state: api_state,
+}
+```
+
+Every map layer consumes one declared `record<...>` layer:
+
+- `record<string>` supports one lookup before reaching a string;
+- `record<record<string>>` supports two lookups;
+- attempting a third member lookup from that result is invalid.
+
+Use `?.` at every map lookup, even when the current literal visibly contains the
+key. The declared map type allows that key to be absent in another valid value.
+
+## Variant record access
+
+A variant can be accessed directly only where every possible member supports the
+path. For record-map variants, an optional chain may proceed only while every
+member at that position is still a record; the shallowest member determines the
+maximum common depth.
+
+For different closed schema shapes, use `match` to narrow the existing value:
+
+```mace
+|===|
+schema LocalSource: {
+  path: string,
+};
+
+schema RemoteSource: {
+  url: string,
+};
+
+alias Source: variant[LocalSource, RemoteSource];
+Source source = { path: "./mace.toml", };
+
+string location = match (source) {
+  LocalSource => source.path,
+  RemoteSource => source.url,
+};
+|===|
+
+{
+  location: location,
+}
+```
+
+The match pattern creates no binding; it narrows `source` in each arm.
+
+## Shorthand fields
+
+Inside record literals and data output, `name` expands to `name: name` when that
+value is in scope.
+
+```mace
+|===|
+string name = "api";
+int replicas = 3;
+
+alias Service: {
+  name: string,
+  replicas: int,
+};
+
+Service service = {
+  name,
+  replicas,
+};
+|===|
+
+{
+  service,
+}
+```
+
+Shorthand does not bypass expected types or nullability.
+
+## Output records and `$self`
+
+The data output block is itself a record evaluated from top to bottom. `$self`
+reads only completed output fields.
+
+```mace
+|===|
+string host = "api.example.com";
+|===|
+
+{
+  endpoint: {
+    host: host,
+    port: 443,
+  },
+  url: "https://$($self.endpoint.host)",
+}
+```
+
+A nested record expression sees the same outer `$self`; it does not receive a
+separate self value for its own fields. `$self` cannot read a future output
+field.
+
+## Access checklist
+
+1. Is the root variable nullable? Guard it with a conditional first.
+2. Is the selected schema field optional? Use `?.`.
+3. Is the target a `record<T>` map? Use `?.` for the lookup.
+4. Can an earlier chain step be absent? Continue every later step with `?.`.
+5. Does the declared type have enough record depth for the full path?
+6. Could the chain be absent? End with `??` before using the result.

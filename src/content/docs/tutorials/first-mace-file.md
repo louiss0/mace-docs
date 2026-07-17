@@ -57,5 +57,5 @@ Expected output:
 
 - [How to validate output with a schema](/how-to/validate-output-with-a-schema/)
 - [How to print canonical Mace output](/how-to/print-canonical-mace-output/)
-- [Intro](/reference/intro/)
+- [Motivation](/tour/motivation/)
 - [Why Mace is deterministic](/explanation/why-mace-is-deterministic/)

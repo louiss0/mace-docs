@@ -37,5 +37,5 @@ questions quickly:
 
 ## Related docs
 
-- [Block Overview](/reference/block-overview/)
+- [Block Overview](/tour/block-overview/)
 - [How to Validate Output with a Schema](/how-to/validate-output-with-a-schema/)

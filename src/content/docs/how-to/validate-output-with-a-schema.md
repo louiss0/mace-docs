@@ -49,5 +49,5 @@ hosted remotely.
 ## Related docs
 
 - [Schemas](/reference/schemas/)
-- [Docs](/reference/docs/)
+- [Doc Syntax](/tour/doc-syntax/)
 - [Script Blocks and Output Blocks](/explanation/script-blocks-and-output-blocks/)

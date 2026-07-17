@@ -8,6 +8,16 @@ import { maceLanguage } from './src/expressive-code/mace-language.mjs';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://mace-docs.onrender.com',
+	redirects: {
+		'/reference/motivation': '/tour/motivation',
+		'/reference/block-overview': '/tour/block-overview',
+		'/reference/type-system-overview': '/tour/type-system-overview',
+		'/reference/docs': '/tour/doc-syntax',
+		'/reference/type-aliases': '/tour/type-system-overview',
+		'/reference/match-expressions': '/reference/choice',
+		'/reference/variant': '/reference/variants',
+		'/reference/cli': '/how-to/cli-reference',
+	},
 	integrations: [
 		starlight({
 			title: 'Mace Docs',
@@ -29,20 +39,43 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Tutorials',
-					autogenerate: { directory: 'tutorials' },
-				},
-				{
-					label: 'How-to Guides',
-					autogenerate: { directory: 'how-to' },
+					label: 'Tour',
+					items: [
+						{ label: 'Motivation', link: '/tour/motivation/' },
+						{ label: 'Block Overview', link: '/tour/block-overview/' },
+						{ label: 'Type System Overview', link: '/tour/type-system-overview/' },
+						{ label: 'Script Block', link: '/tour/script-block/' },
+						{ label: 'Output Block', link: '/tour/output-block/' },
+						{ label: 'Doc Syntax', link: '/tour/doc-syntax/' },
+					],
 				},
 				{
 					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					items: [
+						{ label: 'Variables', link: '/reference/variables/' },
+						{ label: 'String', link: '/reference/string/' },
+						{ label: 'Number', link: '/reference/number/' },
+						{ label: 'Boolean', link: '/reference/boolean/' },
+						{ label: 'Choice', link: '/reference/choice/' },
+						{ label: 'Variants', link: '/reference/variants/' },
+						{ label: 'Fusions', link: '/reference/fusions/' },
+						{ label: 'Arrays', link: '/reference/arrays/' },
+						{ label: 'Records', link: '/reference/records/' },
+						{ label: 'Schemas', link: '/reference/schemas/' },
+						{ label: 'Spec', link: '/reference/spec/' },
+					],
+				},
+				{
+					label: 'Tutorials',
+					items: [{ autogenerate: { directory: 'tutorials' } }],
+				},
+				{
+					label: 'How-to Guides',
+					items: [{ autogenerate: { directory: 'how-to' } }],
 				},
 				{
 					label: 'Explanation',
-					autogenerate: { directory: 'explanation' },
+					items: [{ autogenerate: { directory: 'explanation' } }],
 				},
 			],
 		}),
